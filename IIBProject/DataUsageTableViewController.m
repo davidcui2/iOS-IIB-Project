@@ -8,11 +8,12 @@
 
 #import "DataUsageTableViewController.h"
 
-
+// For Usage
 #include <arpa/inet.h>
 #include <net/if.h>
 #include <ifaddrs.h>
 #include <net/if_dl.h>
+
 
 @interface DataUsageTableViewController ()
 
@@ -27,18 +28,26 @@
 
 @synthesize dataCounters;
 @synthesize managedObjectContext;
+@synthesize locationMgr;
 
 - (void)viewDidLoad {
     [super viewDidLoad];
+    
+    locationMgr = [[CLLocationManager alloc]init];
+    locationMgr.delegate = self;
+    if ([self.locationMgr respondsToSelector:@selector(requestAlwaysAuthorization)]) {
+        [self.locationMgr requestAlwaysAuthorization];
+    }
+    [self.locationMgr startUpdatingLocation];
     
     // Uncomment the following line to preserve selection between presentations.
     // self.clearsSelectionOnViewWillAppear = NO;
     
     // Uncomment the following line to display an Edit button in the navigation bar for this view controller.
     // self.navigationItem.rightBarButtonItem = self.editButtonItem;
-        UIBarButtonItem *uploadButton = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFastForward target:self action:@selector(uploadData)];
-        self.navigationItem.rightBarButtonItem = uploadButton;
-
+//        UIBarButtonItem *uploadButton = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFastForward target:self action:@selector(uploadData)];
+//        self.navigationItem.rightBarButtonItem = uploadButton;
+//
     
     dataCounters = self.getDataCounters;
     
@@ -51,7 +60,7 @@
                   forControlEvents:UIControlEventValueChanged];
     
 
-
+    
 }
 
 - (void)didReceiveMemoryWarning {
@@ -68,7 +77,7 @@
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
     // Return the number of rows in the section.
-    return dataCounters.count;
+    return dataCounters.count + 2; // 2 - GPS
 }
 
 
@@ -96,6 +105,14 @@
             case 3:
                 cell.textLabel.text = @"WWAN Received";
                 cell.detailTextLabel.text = [NSString stringWithFormat:@"%@ bytes",dataCounters[indexPath.row]];
+                break;
+            case 5:
+                cell.textLabel.text = @"Latitude";
+                cell.detailTextLabel.text = [NSString stringWithFormat:@"%.8f", self.lastLocation.coordinate.latitude];
+                break;
+            case 4:
+                cell.textLabel.text = @"Longitude";
+                cell.detailTextLabel.text = [NSString stringWithFormat:@"%.8f", self.lastLocation.coordinate.longitude];
                 break;
             default:
                 break;
@@ -234,8 +251,8 @@
 
 - (void) reloadDataCounters
 {
+    [self.locationMgr startUpdatingLocation];
     dataCounters = self.getDataCounters;
-    [self saveToCoreData];
     [self reloadData];
 }
 
@@ -249,25 +266,41 @@
     dataUsageInfo.wifiReceived =  dataCounters[1];
     dataUsageInfo.wwanSent = dataCounters[2];
     dataUsageInfo.wwanReceived = dataCounters[3];
-
-    NSError *error;
-    if (![context save:&error]) {
-        NSLog(@"Whoops, couldn't save: %@", [error localizedDescription]);
-    }
     
+    dataUsageInfo.gpsLatitude = [NSNumber numberWithDouble:self.lastLocation.coordinate.latitude];
+    dataUsageInfo.gpsLongitude = [NSNumber numberWithDouble:self.lastLocation.coordinate.longitude];
+    
+    // Count all entities
     NSFetchRequest *fetchRequest = [[NSFetchRequest alloc] init];
-    NSEntityDescription *entity = [NSEntityDescription
-                                   entityForName:@"DataStorage" inManagedObjectContext:context];
-    [fetchRequest setEntity:entity];
-    NSArray *fetchedObjects = [context executeFetchRequest:fetchRequest error:&error];
-    for (DataStorage *info in fetchedObjects) {
-        NSLog(@"timeStamp: %@", info.timeStamp);
-        NSLog(@"wifiSent: %@", info.wifiSent);
-        NSLog(@"wifiReceived: %@", info.wifiReceived);
-        NSLog(@"wwanSent: %@", info.wwanSent);
-        NSLog(@"wwanReceived: %@", info.wwanReceived);
-
+    [fetchRequest setEntity:[NSEntityDescription entityForName:@"DataStorage" inManagedObjectContext:managedObjectContext]];
+    [fetchRequest setIncludesSubentities:NO]; //Omit subentities. Default is YES (i.e. include subentities)
+    
+    NSError *err;
+    NSUInteger count = [managedObjectContext countForFetchRequest:fetchRequest error:&err];
+    NSLog(@"Totoal entity Count = %lu",(unsigned long)count);
+    if(count == NSNotFound) {
+        //Handle error
     }
+
+//    NSError *error;
+//    if (![context save:&error]) {
+//        NSLog(@"Whoops, couldn't save: %@", [error localizedDescription]);
+//    }
+//    
+//    NSFetchRequest *fetchRequest = [[NSFetchRequest alloc] init];
+//    NSEntityDescription *entity = [NSEntityDescription
+//                                   entityForName:@"DataStorage" inManagedObjectContext:context];
+//    [fetchRequest setEntity:entity];
+//    NSArray *fetchedObjects = [context executeFetchRequest:fetchRequest error:&error];
+//    for (DataStorage *info in fetchedObjects) {
+//        NSLog(@"timeStamp: %@", info.timeStamp);
+//        NSLog(@"wifiSent: %@", info.wifiSent);
+//        NSLog(@"wifiReceived: %@", info.wifiReceived);
+//        NSLog(@"wwanSent: %@", info.wwanSent);
+//        NSLog(@"wwanReceived: %@", info.wwanReceived);
+//        NSLog(@"gpsLatitude: %@", info.gpsLatitude);
+//        NSLog(@"gpsLongitude: %@", info.gpsLongitude);
+//    }
 }
 
 - (void) clearCoreData
@@ -321,8 +354,8 @@
                     networkStatisc = (const struct if_data *) cursor->ifa_data;
                     WiFiSent+=networkStatisc->ifi_obytes;
                     WiFiReceived+=networkStatisc->ifi_ibytes;
-                    NSLog(@"WiFiSent %d ==%d",WiFiSent,networkStatisc->ifi_obytes);
-                    NSLog(@"WiFiReceived %d ==%d",WiFiReceived,networkStatisc->ifi_ibytes);
+//                    NSLog(@"WiFiSent %d ==%d",WiFiSent,networkStatisc->ifi_obytes);
+//                    NSLog(@"WiFiReceived %d ==%d",WiFiReceived,networkStatisc->ifi_ibytes);
                 }
                 
                 if ([name hasPrefix:@"pdp_ip"])
@@ -330,8 +363,8 @@
                     networkStatisc = (const struct if_data *) cursor->ifa_data;
                     WWANSent+=networkStatisc->ifi_obytes;
                     WWANReceived+=networkStatisc->ifi_ibytes;
-                    NSLog(@"WWANSent %d ==%d",WWANSent,networkStatisc->ifi_obytes);
-                    NSLog(@"WWANReceived %d ==%d",WWANReceived,networkStatisc->ifi_ibytes);
+//                    NSLog(@"WWANSent %d ==%d",WWANSent,networkStatisc->ifi_obytes);
+//                    NSLog(@"WWANReceived %d ==%d",WWANReceived,networkStatisc->ifi_ibytes);
                 }
             }
             
@@ -342,6 +375,65 @@
     }
     
     return [NSArray arrayWithObjects:[NSNumber numberWithInt:WiFiSent], [NSNumber numberWithInt:WiFiReceived],[NSNumber numberWithInt:WWANSent],[NSNumber numberWithInt:WWANReceived], nil];
+}
+
+#pragma mark - CLLocationManagerDelegate
+
+- (void)locationManager:(CLLocationManager *)manager didFailWithError:(NSError *)error
+{
+    NSLog(@"didFailWithError: %@", error);
+    UIAlertView *errorAlert = [[UIAlertView alloc]
+                               initWithTitle:@"Error" message:@"Failed to Get Your Location" delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil];
+    [errorAlert show];
+}
+
+- (void)locationManager:(CLLocationManager *)manager didUpdateToLocation:(CLLocation *)newLocation fromLocation:(CLLocation *)oldLocation
+{
+    if (!self.lastLocation) {
+        self.lastLocation = newLocation;
+    }
+    
+    if (newLocation.coordinate.latitude != self.lastLocation.coordinate.latitude &&
+        newLocation.coordinate.longitude != self.lastLocation.coordinate.longitude) {
+        self.lastLocation = newLocation;
+        NSLog(@"New location: %f, %f",
+              self.lastLocation.coordinate.latitude,
+              self.lastLocation.coordinate.longitude);
+//        [self.locationMgr stopUpdatingLocation];
+    }
+    
+    CLLocation *currentLocation = newLocation;
+    NSLog(@"New location: %f, %f",
+          self.lastLocation.coordinate.latitude,
+          self.lastLocation.coordinate.longitude);
+    
+    if (currentLocation != nil) {
+//        self.labelLongitude.text = [NSString stringWithFormat:@"%.8f", currentLocation.coordinate.longitude];
+//        self.labelLatitude.text = [NSString stringWithFormat:@"%.8f", currentLocation.coordinate.latitude];
+    }
+    [self.tableView reloadData];
+    [self.locationMgr stopUpdatingLocation];
+    
+    
+    [self saveToCoreData];
+    
+    
+    // Reverse Geocoding
+//    NSLog(@"Resolving the Address");
+//    [geocoder reverseGeocodeLocation:currentLocation completionHandler:^(NSArray *placemarks, NSError *error) {
+//        NSLog(@"Found placemarks: %@, error: %@", placemarks, error);
+//        if (error == nil && [placemarks count] > 0) {
+//            placemark = [placemarks lastObject];
+//            self.labelAddress.text = [NSString stringWithFormat:@"%@ %@\n%@ %@\n%@\n%@",
+//                                      placemark.subThoroughfare, placemark.thoroughfare,
+//                                      placemark.postalCode, placemark.locality,
+//                                      placemark.administrativeArea,
+//                                      placemark.country];
+//            //[self.labelAddress sizeToFit];
+//        } else {
+//            NSLog(@"%@", error.debugDescription);
+//        }
+//    } ];
 }
 
 @end

@@ -9,6 +9,9 @@
 #import <UIKit/UIKit.h>
 #import <CoreData/CoreData.h>
 #import "DataStorage.h"
+// For GPS
+#import <CoreLocation/CoreLocation.h>
+
 
 @protocol PassBackManagedObjectContextDelegate
 
@@ -16,11 +19,13 @@
 
 @end
 
-@interface DataUsageTableViewController : UITableViewController
+@interface DataUsageTableViewController : UITableViewController <CLLocationManagerDelegate>
 
 @property (nonatomic, weak) id<PassBackManagedObjectContextDelegate> delegate;
 
 @property (nonatomic,strong) NSManagedObjectContext* managedObjectContext;
 
+@property (nonatomic, retain) CLLocationManager *locationMgr;
+@property (nonatomic, retain) CLLocation *lastLocation;
 
 @end

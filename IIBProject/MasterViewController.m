@@ -32,13 +32,15 @@
     self.navigationItem.rightBarButtonItem = clearButton;
     
     // Initialize the refresh control.
-    self.refreshControl = [[UIRefreshControl alloc] init];
-    self.refreshControl.backgroundColor = [UIColor purpleColor];
-    self.refreshControl.tintColor = [UIColor whiteColor];
-    [self.refreshControl addTarget:self
-                            action:@selector(reloadDataCounters)
-                  forControlEvents:UIControlEventValueChanged];
-    
+//    self.refreshControl = [[UIRefreshControl alloc] init];
+//    self.refreshControl.backgroundColor = [UIColor purpleColor];
+//    self.refreshControl.tintColor = [UIColor whiteColor];
+//    [self.refreshControl addTarget:self
+//                            action:@selector(reloadDataCounters)
+//                  forControlEvents:UIControlEventValueChanged];
+//
+    NSUUID *oNSUUID = [[UIDevice currentDevice] identifierForVendor];
+    NSLog(@"Current device UUID: %@", oNSUUID.UUIDString);
 }
 
 - (void)reloadData
@@ -93,9 +95,9 @@
 }
 
 - (void)insertNewObject:(id)sender {
-    NSManagedObjectContext *context = [self.fetchedResultsController managedObjectContext];
-    NSEntityDescription *entity = [[self.fetchedResultsController fetchRequest] entity];
-    NSManagedObject *newManagedObject = [NSEntityDescription insertNewObjectForEntityForName:[entity name] inManagedObjectContext:context];
+//    NSManagedObjectContext *context = [self.fetchedResultsController managedObjectContext];
+//    NSEntityDescription *entity = [[self.fetchedResultsController fetchRequest] entity];
+//    NSManagedObject *newManagedObject = [NSEntityDescription insertNewObjectForEntityForName:[entity name] inManagedObjectContext:context];
 }
 
 #pragma mark - Segues
