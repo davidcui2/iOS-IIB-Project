@@ -9,6 +9,8 @@
 #import "UploadViewController.h"
 #import <QuartzCore/QuartzCore.h>
 
+#import "Reachability.h"
+
 @interface UploadViewController ()
 
 - (void)addToLog:(NSString *)input;
@@ -16,39 +18,39 @@
 @property (strong, nonatomic) NSString *ipAddress;
 @property (strong, nonatomic) NSString *defaultAddress;
 
+@property (nonatomic, strong) CMMotionActivityManager *motionActivitiyManager;
 
 @end
 
 @implementation UploadViewController
 
-int deviceID;
+@synthesize motionActivitiyManager = _motionActivitiyManager;
 
-@synthesize progressBar;
-@synthesize logText;
-@synthesize managedObjectContext;
+NSUUID * deviceUUID;
 
 - (void)viewDidLoad {
     [super viewDidLoad];
     
-    logText.layer.borderWidth = 2.0f;
-    logText.layer.borderColor = [[UIColor grayColor] CGColor];
+    self.logText.layer.borderWidth = 2.0f;
+    self.logText.layer.borderColor = [[UIColor grayColor] CGColor];
     
-    progressBar.hidden = 1;
+    self.progressBar.hidden = 1;
     
     //default
     self.defaultAddress = @"192.168.165.100";
     self.ipAddress = self.defaultAddress;
     self.textField.text = self.ipAddress;
     
-    NSUUID *oNSUUID = [[UIDevice currentDevice] identifierForVendor];
-    if ([oNSUUID.UUIDString isEqualToString:@"388BDB9E-ECC1-4644-BD80-71F48118104C"])
-    {
-        deviceID = 2;
+    deviceUUID = [[UIDevice currentDevice] identifierForVendor];
+    
+    
+    if (_motionActivitiyManager == nil) {
+        _motionActivitiyManager = [[CMMotionActivityManager alloc]init];
     }
-    else
-    {
-        deviceID = 1;
-    }
+    
+    // TEST!!!
+//    [self updateLastUpdateDate:[NSDate dateWithTimeIntervalSinceNow:-1*3600*24]];
+    
 }
 
 - (void)didReceiveMemoryWarning {
@@ -58,24 +60,52 @@ int deviceID;
 
 - (IBAction)uploadButtonPressed:(id)sender {
     
+    Reachability *reachability = [Reachability reachabilityForInternetConnection];
+    [reachability startNotifier];
+    
+    NetworkStatus status = [reachability currentReachabilityStatus];
+    
+    if(status == NotReachable)
+    {
+        [self addToLog:[NSString stringWithFormat:@"Sorry, internet connection"]];
+        return;
+    }
+    else if (status == ReachableViaWiFi)
+    {
+        //WiFi
+    }
+    else if (status == ReachableViaWWAN)
+    {
+        UIAlertView *message = [[UIAlertView alloc] initWithTitle:@"Upload stopped"
+                                                          message:@"Please connect to WiFi first!"
+                                                         delegate:nil
+                                                cancelButtonTitle:@"Back"
+                                                otherButtonTitles:nil];
+        [message show];
+
+        return;
+    }
+    
+
+    
     NSString* fullAddress = [NSString stringWithFormat:@"http://%@/~DavidCui/Direct/uploadDataUsage.php", self.ipAddress];
     
     NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:[NSURL URLWithString:fullAddress]];
     
     // Count all entities
     NSFetchRequest *fetchRequest = [[NSFetchRequest alloc] init];
-    [fetchRequest setEntity:[NSEntityDescription entityForName:@"DataStorage" inManagedObjectContext:managedObjectContext]];
+    [fetchRequest setEntity:[NSEntityDescription entityForName:@"DataStorage" inManagedObjectContext:self.managedObjectContext]];
     [fetchRequest setIncludesSubentities:NO]; //Omit subentities. Default is YES (i.e. include subentities)
     
     NSError *err;
-    NSUInteger count = [managedObjectContext countForFetchRequest:fetchRequest error:&err];
+    NSUInteger count = [self.managedObjectContext countForFetchRequest:fetchRequest error:&err];
     NSLog(@"Count = %lu",(unsigned long)count);
     if(count == NSNotFound) {
         //Handle error
     }
     
     if (count > 0) {
-        progressBar.hidden = 0;
+        self.progressBar.hidden = 0;
     }
     else {
         
@@ -87,7 +117,7 @@ int deviceID;
     NSOperationQueue *progressQueue = [[NSOperationQueue alloc] init];
     [progressQueue addOperationWithBlock:^{
         NSDateFormatter *formatter = [[NSDateFormatter alloc] init];
-        [formatter setDateFormat:@"Y-m-d H:mm:s"];
+        [formatter setDateFormat:@"Y-M-D H:mm:s"];
         //        NSLog(@"%@",[formatter stringFromDate:[NSDate date]]);
         
         NSManagedObjectContext *context = [self managedObjectContext];
@@ -102,8 +132,8 @@ int deviceID;
         int currentCounter = 0;
         
         for (DataStorage * dt in data) {
-            NSString *post = [NSString stringWithFormat:@"deviceID=%d&timeStamp=%@&wifiSent=%@&wifiReceived=%@&wwanSent=%@&wwanReceived=%@&gpsLatitude=%@&gpsLongitude=%@&", deviceID,
-                              [formatter stringFromDate:[NSDate date]],dt.wifiSent,dt.wifiReceived,dt.wwanSent,dt.wwanReceived,dt.gpsLatitude,dt.gpsLongitude];
+            NSString *post = [NSString stringWithFormat:@"UUID=%@&timeStamp=%@&wifiSent=%@&wifiReceived=%@&wwanSent=%@&wwanReceived=%@&gpsLatitude=%@&gpsLongitude=%@&estimateSpeed=%@&", deviceUUID.UUIDString,
+                              [formatter stringFromDate:dt.timeStamp],dt.wifiSent,dt.wifiReceived,dt.wwanSent,dt.wwanReceived,dt.gpsLatitude,dt.gpsLongitude,dt.estimateSpeed];
             NSData *postData = [post dataUsingEncoding:NSASCIIStringEncoding allowLossyConversion:YES];
             NSString *postLength = [NSString stringWithFormat:@"%lu", (unsigned long)[postData length]];
             [request setHTTPMethod:@"POST"];
@@ -115,8 +145,8 @@ int deviceID;
             NSData *returnData = [NSURLConnection sendSynchronousRequest:request returningResponse:nil     error:&error];
             if (returnData)
             {
-//                                NSString *json=[[NSString alloc] initWithData:returnData encoding:NSUTF8StringEncoding];
-//                                NSLog(@"Resp string: %@",json);
+                                NSString *json=[[NSString alloc] initWithData:returnData encoding:NSUTF8StringEncoding];
+                                NSLog(@"Resp string: %@",json);
                 
                 [context deleteObject:dt];
 
@@ -135,7 +165,7 @@ int deviceID;
             
             if (progressValue == 1) {
                 dispatch_async(dispatch_get_main_queue(), ^{
-                    progressBar.hidden = 1;
+                    self.progressBar.hidden = 1;
                     [self addToLog:[NSString stringWithFormat:@"Uploaded %d entries", currentCounter]];
                 });
                 
@@ -152,16 +182,25 @@ int deviceID;
     }];
     
     
+    if ([CMMotionActivityManager isActivityAvailable]) {
+        UIAlertView *message = [[UIAlertView alloc] initWithTitle:@"Further Upload"
+                                                          message:@"Do you want to upload device activity?"
+                                                         delegate:self
+                                                cancelButtonTitle:@"Cancel"
+                                                otherButtonTitles:@"Yes", nil];
+        [message show];
+        
+    }
     
 }
 
 - (void)addToLog:(NSString *)input
 {
-    [[logText textStorage] appendAttributedString:[[NSAttributedString alloc] initWithString:[NSString stringWithFormat:@"%@: %@\n",[NSDate date],input]]];
+    [[self.logText textStorage] appendAttributedString:[[NSAttributedString alloc] initWithString:[NSString stringWithFormat:@"%@: %@\n",[NSDate date],input]]];
 }
 
 - (IBAction)clearLogs:(id)sender {
-    [logText setText:@""];
+    [self.logText setText:@""];
 }
 
 - (IBAction)startEditIP:(id)sender {
@@ -179,6 +218,207 @@ int deviceID;
         self.ipAddress = self.defaultAddress;
     }
     self.textField.text = self.ipAddress;
+}
+
+- (NSDate *)getLastUpdateTime
+{
+    // Get last uploaded time
+    NSDate *lastUpdateTime;
+
+    NSManagedObjectContext *context = [self managedObjectContext];
+    
+    NSFetchRequest *allData = [[NSFetchRequest alloc] init];
+    [allData setEntity:[NSEntityDescription entityForName:@"MotionActivityRecord" inManagedObjectContext:context]];
+    [allData setIncludesPropertyValues:NO]; //only fetch the managedObjectID
+    
+    NSError * error = nil;
+    NSArray * data = [context executeFetchRequest:allData error:&error];
+    
+    
+    NSDate *sevenDatesB4 = [NSDate dateWithTimeIntervalSinceNow:-7*24*3600+1];
+    
+    for (MotionActivityRecord * dt in data) {
+        lastUpdateTime = dt.lastUpdateTime;
+        break;
+    }
+    
+    if (!(lastUpdateTime)) {
+        lastUpdateTime = sevenDatesB4;
+    }
+    else lastUpdateTime = [lastUpdateTime laterDate:sevenDatesB4];
+    
+    return lastUpdateTime;
+}
+
+- (void)uploadMotionActivity
+{
+     NSDate *lastUpdateTime = [self getLastUpdateTime];
+    
+    
+    UIActivityIndicatorView *activityView=[[UIActivityIndicatorView alloc]     initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleGray];
+    activityView.center=self.view.center;
+    [activityView startAnimating];
+    [self.view addSubview:activityView];
+    
+    [_motionActivitiyManager queryActivityStartingFromDate:lastUpdateTime toDate:[NSDate date] toQueue:[NSOperationQueue mainQueue] withHandler:^(NSArray *activities, NSError *error) {
+        if (error) {
+            UIAlertView *alert = [[UIAlertView alloc] initWithTitle:NSLocalizedString(@"Error", nil)
+                                                            message:[error description]
+                                                           delegate:nil
+                                                  cancelButtonTitle:NSLocalizedString(@"OK", nil)
+                                                  otherButtonTitles:nil, nil];
+            [alert show];
+            return ;
+        }
+        if (error != nil && error.code == CMErrorMotionActivityNotAuthorized) {
+            
+            dispatch_async(dispatch_get_main_queue(), ^{
+                [self addToLog:@"The app isn't authorized to use motion activity support."];
+                [activityView stopAnimating];
+            });
+        }
+        else{
+            //            for (CMMotionActivity *activity in activities) {
+            //                // Only need High confidence activity
+            //                if (activity.confidence == CMMotionActivityConfidenceHigh) {
+            //                    // Extract a function return all possible activity
+            //                    if (activity.automotive) NSLog(@"Automotive: %d, Start date: %@", activity.automotive, activity.startDate);
+            //                    if (activity.cycling) NSLog(@"Cycling: %d, Start date: %@", activity.cycling, activity.startDate);
+            //                    if (activity.running) NSLog(@"Running: %d, Start date: %@", activity.running, activity.startDate);
+            //                    if (activity.walking) NSLog(@"Walking: %d, Start date: %@", activity.walking, activity.startDate);
+            //                    if (activity.stationary) NSLog(@"Stationary: %d, Start Date: %@", activity.stationary, activity.startDate);
+            //                }
+            //
+            //            }
+            
+            NSString* fullAddress = [NSString stringWithFormat:@"http://%@/~DavidCui/Direct/uploadActivity.php", self.ipAddress];
+            
+            NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:[NSURL URLWithString:fullAddress]];
+            
+            // Upload in background
+            NSOperationQueue *progressQueue = [[NSOperationQueue alloc] init];
+            [progressQueue addOperationWithBlock:^{
+                NSDateFormatter *formatter = [[NSDateFormatter alloc] init];
+                [formatter setDateFormat:@"Y-M-D H:mm:s"];
+                //        NSLog(@"%@",[formatter stringFromDate:[NSDate date]]);
+                
+                NSManagedObjectContext *context = [self managedObjectContext];
+                
+                NSFetchRequest *allData = [[NSFetchRequest alloc] init];
+                [allData setEntity:[NSEntityDescription entityForName:@"MotionActivityRecord" inManagedObjectContext:context]];
+                [allData setIncludesPropertyValues:NO]; //only fetch the managedObjectID
+                
+                int currentCounter = 0;
+                
+                BOOL uploadOK = 1;
+                
+                for (CMMotionActivity *activity in activities) {
+                    if ((activity.confidence == CMMotionActivityConfidenceHigh)||(activity.confidence == CMMotionActivityConfidenceMedium)) {
+                        // Extract a function return all possible activity
+                        NSString *activityName;
+                        if (activity.automotive) activityName = @"automotive";
+                        else if (activity.cycling) activityName = @"cycling";
+                        else if (activity.running) activityName = @"running";
+                        else if (activity.walking) activityName = @"walking";
+                        else if (activity.stationary) activityName = @"stationary";
+                        else activityName = @"unknown";
+                        
+                        NSString *confidence;
+                        
+                        if (activity.confidence == CMMotionActivityConfidenceHigh) confidence = @"High";
+                        else confidence = @"Medium";
+                        
+                        NSString *post = [NSString stringWithFormat:@"UUID=%@&startTime=%@&activityName=%@&confidenceLevel=%@&", deviceUUID.UUIDString,
+                                          [formatter stringFromDate:activity.startDate], activityName, confidence];
+                        NSData *postData = [post dataUsingEncoding:NSASCIIStringEncoding allowLossyConversion:YES];
+                        NSString *postLength = [NSString stringWithFormat:@"%lu", (unsigned long)[postData length]];
+                        [request setHTTPMethod:@"POST"];
+                        [request setValue:postLength forHTTPHeaderField:@"Content-Length"];
+                        [request setValue:@"application/x-www-form-urlencoded" forHTTPHeaderField:@"Content-Type"];
+                        [request setHTTPBody:postData];
+                        
+                        NSError *error;
+                        NSData *returnData = [NSURLConnection sendSynchronousRequest:request returningResponse:nil     error:&error];
+                        if (returnData)
+                        {
+                            //                            NSString *json=[[NSString alloc] initWithData:returnData encoding:NSUTF8StringEncoding];
+                            //                            NSLog(@"Resp string: %@",json);
+                        }
+                        else
+                        {
+                            NSLog(@"Error: %@", error);
+                            uploadOK = 0;
+                            break;
+                        }
+                        
+                        currentCounter++;
+                    }
+                    
+                    
+                    
+                }
+                
+                if (uploadOK) {
+                    [self updateLastUpdateDate:[NSDate date]];
+                }
+                
+                dispatch_async(dispatch_get_main_queue(), ^{
+                    [self addToLog:[NSString stringWithFormat:@"Uploaded %d high confidence motion activities.", currentCounter]];
+                    [activityView stopAnimating];
+                });
+                
+            }];
+        }
+    }];
+}
+
+- (void) updateLastUpdateDate:(NSDate *)lastUpdateDate
+{
+    // Get last uploaded time
+    NSManagedObjectContext *context = [self managedObjectContext];
+    
+    // Count all entities
+    NSFetchRequest *fetchRequest = [[NSFetchRequest alloc] init];
+    [fetchRequest setEntity:[NSEntityDescription entityForName:@"MotionActivityRecord" inManagedObjectContext:self.managedObjectContext]];
+    [fetchRequest setIncludesSubentities:NO]; //Omit subentities. Default is YES (i.e. include subentities)
+    
+    NSError *err;
+    NSUInteger count = [self.managedObjectContext countForFetchRequest:fetchRequest error:&err];
+    NSLog(@"MotionActivityRecord Count = %lu",(unsigned long)count);
+    if(count == NSNotFound) {
+        //Handle error
+    }
+    
+    if (count > 0) {
+        NSFetchRequest *allData = [[NSFetchRequest alloc] init];
+        [allData setEntity:[NSEntityDescription entityForName:@"MotionActivityRecord" inManagedObjectContext:context]];
+        [allData setIncludesPropertyValues:NO]; //only fetch the managedObjectID
+        
+        NSError * error = nil;
+        NSArray * data = [context executeFetchRequest:allData error:&error];
+        
+        for (MotionActivityRecord * dt in data) {
+            dt.lastUpdateTime = lastUpdateDate;
+            break;
+        }
+    }
+    else {
+        NSManagedObjectContext *context = [self managedObjectContext];
+        MotionActivityRecord *motionActivityRecord = [NSEntityDescription
+                                      insertNewObjectForEntityForName:@"MotionActivityRecord" inManagedObjectContext:context];
+        motionActivityRecord.lastUpdateTime = lastUpdateDate;
+    }
+    NSError *saveError = nil;
+    [context save:&saveError];
+   }
+
+- (void)alertView:(UIAlertView *)alertView clickedButtonAtIndex:(NSInteger)buttonIndex
+{
+    NSString *title = [alertView buttonTitleAtIndex:buttonIndex];
+    
+    if ([title isEqualToString:@"Yes"]) {
+        [self uploadMotionActivity];
+    }
 }
 
 /*

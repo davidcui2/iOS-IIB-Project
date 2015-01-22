@@ -7,6 +7,9 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		2245FD8A1A6D790300D6526C /* MotionActivityRecord.m in Sources */ = {isa = PBXBuildFile; fileRef = 2245FD891A6D790300D6526C /* MotionActivityRecord.m */; };
+		2245FD8C1A6E8E5B00D6526C /* CoreMotion.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2245FD8B1A6E8E5B00D6526C /* CoreMotion.framework */; };
+		224BE4F11A716E0D0007E41D /* DataStorage.m in Sources */ = {isa = PBXBuildFile; fileRef = 224BE4F01A716E0D0007E41D /* DataStorage.m */; };
 		2277A64D1A672A5800396BE8 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 2277A64C1A672A5800396BE8 /* main.m */; };
 		2277A6501A672A5800396BE8 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 2277A64F1A672A5800396BE8 /* AppDelegate.m */; };
 		2277A6531A672A5800396BE8 /* IIBProject.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 2277A6511A672A5800396BE8 /* IIBProject.xcdatamodeld */; };
@@ -17,8 +20,8 @@
 		2277A6611A672A5800396BE8 /* LaunchScreen.xib in Resources */ = {isa = PBXBuildFile; fileRef = 2277A65F1A672A5800396BE8 /* LaunchScreen.xib */; };
 		2277A66D1A672A5900396BE8 /* IIBProjectTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 2277A66C1A672A5900396BE8 /* IIBProjectTests.m */; };
 		2277A6781A672A9B00396BE8 /* DataUsageTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 2277A6771A672A9B00396BE8 /* DataUsageTableViewController.m */; };
-		228EF2CF1A67E28200B7A14C /* DataStorage.m in Sources */ = {isa = PBXBuildFile; fileRef = 228EF2CE1A67E28200B7A14C /* DataStorage.m */; };
 		228EF2D21A6819B400B7A14C /* UploadViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 228EF2D11A6819B400B7A14C /* UploadViewController.m */; };
+		22D547511A700759006D806C /* Reachability.m in Sources */ = {isa = PBXBuildFile; fileRef = 22D547501A700759006D806C /* Reachability.m */; };
 		22D91F8F1A6917B8001DC248 /* CoreLocation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 22D91F8E1A6917B8001DC248 /* CoreLocation.framework */; };
 /* End PBXBuildFile section */
 
@@ -33,6 +36,11 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		2245FD881A6D790300D6526C /* MotionActivityRecord.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MotionActivityRecord.h; sourceTree = "<group>"; };
+		2245FD891A6D790300D6526C /* MotionActivityRecord.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MotionActivityRecord.m; sourceTree = "<group>"; };
+		2245FD8B1A6E8E5B00D6526C /* CoreMotion.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreMotion.framework; path = System/Library/Frameworks/CoreMotion.framework; sourceTree = SDKROOT; };
+		224BE4EF1A716E0D0007E41D /* DataStorage.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DataStorage.h; sourceTree = "<group>"; };
+		224BE4F01A716E0D0007E41D /* DataStorage.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DataStorage.m; sourceTree = "<group>"; };
 		2277A6471A672A5800396BE8 /* IIBProject.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = IIBProject.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		2277A64B1A672A5800396BE8 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		2277A64C1A672A5800396BE8 /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
@@ -51,10 +59,10 @@
 		2277A66C1A672A5900396BE8 /* IIBProjectTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = IIBProjectTests.m; sourceTree = "<group>"; };
 		2277A6761A672A9B00396BE8 /* DataUsageTableViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DataUsageTableViewController.h; sourceTree = "<group>"; };
 		2277A6771A672A9B00396BE8 /* DataUsageTableViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DataUsageTableViewController.m; sourceTree = "<group>"; };
-		228EF2CD1A67E28200B7A14C /* DataStorage.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DataStorage.h; sourceTree = "<group>"; };
-		228EF2CE1A67E28200B7A14C /* DataStorage.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DataStorage.m; sourceTree = "<group>"; };
 		228EF2D01A6819B400B7A14C /* UploadViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UploadViewController.h; sourceTree = "<group>"; };
 		228EF2D11A6819B400B7A14C /* UploadViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = UploadViewController.m; sourceTree = "<group>"; };
+		22D5474F1A700759006D806C /* Reachability.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Reachability.h; sourceTree = "<group>"; };
+		22D547501A700759006D806C /* Reachability.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Reachability.m; sourceTree = "<group>"; };
 		22D91F8E1A6917B8001DC248 /* CoreLocation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreLocation.framework; path = System/Library/Frameworks/CoreLocation.framework; sourceTree = SDKROOT; };
 /* End PBXFileReference section */
 
@@ -63,6 +71,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				2245FD8C1A6E8E5B00D6526C /* CoreMotion.framework in Frameworks */,
 				22D91F8F1A6917B8001DC248 /* CoreLocation.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -80,6 +89,7 @@
 		2277A63E1A672A5800396BE8 = {
 			isa = PBXGroup;
 			children = (
+				2245FD8B1A6E8E5B00D6526C /* CoreMotion.framework */,
 				22D91F8E1A6917B8001DC248 /* CoreLocation.framework */,
 				2277A6491A672A5800396BE8 /* IIBProject */,
 				2277A6691A672A5900396BE8 /* IIBProjectTests */,
@@ -99,6 +109,8 @@
 		2277A6491A672A5800396BE8 /* IIBProject */ = {
 			isa = PBXGroup;
 			children = (
+				22D5474F1A700759006D806C /* Reachability.h */,
+				22D547501A700759006D806C /* Reachability.m */,
 				2277A64E1A672A5800396BE8 /* AppDelegate.h */,
 				2277A64F1A672A5800396BE8 /* AppDelegate.m */,
 				2277A6541A672A5800396BE8 /* MasterViewController.h */,
@@ -113,8 +125,10 @@
 				2277A65D1A672A5800396BE8 /* Images.xcassets */,
 				2277A65F1A672A5800396BE8 /* LaunchScreen.xib */,
 				2277A6511A672A5800396BE8 /* IIBProject.xcdatamodeld */,
-				228EF2CD1A67E28200B7A14C /* DataStorage.h */,
-				228EF2CE1A67E28200B7A14C /* DataStorage.m */,
+				224BE4EF1A716E0D0007E41D /* DataStorage.h */,
+				224BE4F01A716E0D0007E41D /* DataStorage.m */,
+				2245FD881A6D790300D6526C /* MotionActivityRecord.h */,
+				2245FD891A6D790300D6526C /* MotionActivityRecord.m */,
 				2277A64A1A672A5800396BE8 /* Supporting Files */,
 			);
 			path = IIBProject;
@@ -195,6 +209,11 @@
 				TargetAttributes = {
 					2277A6461A672A5800396BE8 = {
 						CreatedOnToolsVersion = 6.1.1;
+						SystemCapabilities = {
+							com.apple.BackgroundModes = {
+								enabled = 1;
+							};
+						};
 					};
 					2277A6651A672A5900396BE8 = {
 						CreatedOnToolsVersion = 6.1.1;
@@ -247,13 +266,15 @@
 			buildActionMask = 2147483647;
 			files = (
 				2277A6591A672A5800396BE8 /* DetailViewController.m in Sources */,
+				224BE4F11A716E0D0007E41D /* DataStorage.m in Sources */,
 				2277A6561A672A5800396BE8 /* MasterViewController.m in Sources */,
 				2277A6501A672A5800396BE8 /* AppDelegate.m in Sources */,
 				2277A64D1A672A5800396BE8 /* main.m in Sources */,
+				22D547511A700759006D806C /* Reachability.m in Sources */,
 				2277A6531A672A5800396BE8 /* IIBProject.xcdatamodeld in Sources */,
 				228EF2D21A6819B400B7A14C /* UploadViewController.m in Sources */,
+				2245FD8A1A6D790300D6526C /* MotionActivityRecord.m in Sources */,
 				2277A6781A672A9B00396BE8 /* DataUsageTableViewController.m in Sources */,
-				228EF2CF1A67E28200B7A14C /* DataStorage.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

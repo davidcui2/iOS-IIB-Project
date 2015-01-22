@@ -41,6 +41,7 @@
 //
     NSUUID *oNSUUID = [[UIDevice currentDevice] identifierForVendor];
     NSLog(@"Current device UUID: %@", oNSUUID.UUIDString);
+    
 }
 
 - (void)reloadData

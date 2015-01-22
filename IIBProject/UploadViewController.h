@@ -8,9 +8,11 @@
 
 #import <UIKit/UIKit.h>
 #import <CoreData/CoreData.h>
+#import <CoreMotion/CoreMotion.h>
 #import "DataStorage.h"
+#import "MotionActivityRecord.h"
 
-@interface UploadViewController : UIViewController
+@interface UploadViewController : UIViewController <UIAlertViewDelegate>
 
 @property (strong, nonatomic) IBOutlet UIView *contentView;
 @property (strong, nonatomic) IBOutlet UIScrollView *scrollView;

@@ -2,7 +2,7 @@
 //  DataStorage.m
 //  IIBProject
 //
-//  Created by Zhihao Cui on 15/01/2015.
+//  Created by Zhihao Cui on 22/01/2015.
 //  Copyright (c) 2015 Zhihao Cui. All rights reserved.
 //
 
@@ -18,5 +18,6 @@
 @dynamic wifiSent;
 @dynamic wwanReceived;
 @dynamic wwanSent;
+@dynamic estimateSpeed;
 
 @end

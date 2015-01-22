@@ -8,7 +8,9 @@
 
 #import "DataUsageTableViewController.h"
 
-// For Usage
+#import "AppDelegate.h"
+
+// For Data Usage
 #include <arpa/inet.h>
 #include <net/if.h>
 #include <ifaddrs.h>
@@ -18,27 +20,30 @@
 @interface DataUsageTableViewController ()
 
 @property (nonatomic, retain) NSArray *dataCounters;
+@property (nonatomic, retain) NSMutableDictionary *motionData;
 
-- (void) reloadDataCounters;
+
+- (void) reloadDataCounters; 
 - (NSArray *)getDataCounters;
 
 @end
 
 @implementation DataUsageTableViewController
 
-@synthesize dataCounters;
-@synthesize managedObjectContext;
-@synthesize locationMgr;
+CMMotionManager *motionManager;
+
+
 
 - (void)viewDidLoad {
     [super viewDidLoad];
     
-    locationMgr = [[CLLocationManager alloc]init];
-    locationMgr.delegate = self;
-    if ([self.locationMgr respondsToSelector:@selector(requestAlwaysAuthorization)]) {
-        [self.locationMgr requestAlwaysAuthorization];
+    // Gps Controls
+    self.locationManager = [[CLLocationManager alloc]init];
+    self.locationManager.delegate = self;
+    if ([self.locationManager respondsToSelector:@selector(requestAlwaysAuthorization)]) {
+        [self.locationManager requestAlwaysAuthorization];
     }
-    [self.locationMgr startUpdatingLocation];
+    [self.locationManager startUpdatingLocation];
     
     // Uncomment the following line to preserve selection between presentations.
     // self.clearsSelectionOnViewWillAppear = NO;
@@ -49,7 +54,7 @@
 //        self.navigationItem.rightBarButtonItem = uploadButton;
 //
     
-    dataCounters = self.getDataCounters;
+    self.dataCounters = self.getDataCounters;
     
     // Initialize the refresh control.
     self.refreshControl = [[UIRefreshControl alloc] init];
@@ -59,7 +64,15 @@
                             action:@selector(reloadDataCounters)
                   forControlEvents:UIControlEventValueChanged];
     
-
+    // Motion sensors
+    motionManager = [[CMMotionManager alloc] init];
+    if (!motionManager.accelerometerAvailable) {
+        NSLog(@"No accelerometer available! ");
+    }
+    else {
+        motionManager.accelerometerUpdateInterval = 0.1;
+        [self startDeviceUpdate];
+    }
     
 }
 
@@ -77,7 +90,7 @@
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
     // Return the number of rows in the section.
-    return dataCounters.count + 2; // 2 - GPS
+    return self.dataCounters.count + 2 + self.motionData.count; // 2 - GPS
 }
 
 
@@ -89,34 +102,36 @@
         cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleValue2  reuseIdentifier:MyIdentifier];
     }
     
-        switch (indexPath.row) {
-            case 0:
-                cell.textLabel.text = @"WiFi Sent";
-                cell.detailTextLabel.text = [NSString stringWithFormat:@"%@ bytes",dataCounters[indexPath.row]];
-                break;
-            case 1:
-                cell.textLabel.text = @"WiFi Received";
-                cell.detailTextLabel.text = [NSString stringWithFormat:@"%@ bytes",dataCounters[indexPath.row]];
-                break;
-            case 2:
-                cell.textLabel.text = @"WWAN Sent";
-                cell.detailTextLabel.text = [NSString stringWithFormat:@"%@ bytes",dataCounters[indexPath.row]];
-                break;
-            case 3:
-                cell.textLabel.text = @"WWAN Received";
-                cell.detailTextLabel.text = [NSString stringWithFormat:@"%@ bytes",dataCounters[indexPath.row]];
-                break;
-            case 5:
-                cell.textLabel.text = @"Latitude";
-                cell.detailTextLabel.text = [NSString stringWithFormat:@"%.8f", self.lastLocation.coordinate.latitude];
-                break;
-            case 4:
-                cell.textLabel.text = @"Longitude";
-                cell.detailTextLabel.text = [NSString stringWithFormat:@"%.8f", self.lastLocation.coordinate.longitude];
-                break;
-            default:
-                break;
-        }
+    switch (indexPath.row) {
+        case 0:
+            cell.textLabel.text = @"WiFi Sent";
+            cell.detailTextLabel.text = [NSString stringWithFormat:@"%@ bytes",self.dataCounters[indexPath.row]];
+            break;
+        case 1:
+            cell.textLabel.text = @"WiFi Received";
+            cell.detailTextLabel.text = [NSString stringWithFormat:@"%@ bytes",self.dataCounters[indexPath.row]];
+            break;
+        case 2:
+            cell.textLabel.text = @"WWAN Sent";
+            cell.detailTextLabel.text = [NSString stringWithFormat:@"%@ bytes",self.dataCounters[indexPath.row]];
+            break;
+        case 3:
+            cell.textLabel.text = @"WWAN Received";
+            cell.detailTextLabel.text = [NSString stringWithFormat:@"%@ bytes",self.dataCounters[indexPath.row]];
+            break;
+        case 4:
+            cell.textLabel.text = @"Longitude";
+            cell.detailTextLabel.text = [NSString stringWithFormat:@"%.8f", self.lastLocation.coordinate.longitude];
+            break;
+        case 5:
+            cell.textLabel.text = @"Latitude";
+            cell.detailTextLabel.text = [NSString stringWithFormat:@"%.8f", self.lastLocation.coordinate.latitude];
+            break;
+        default:
+            cell.textLabel.text = [[[self.motionData allKeys] sortedArrayUsingSelector:@selector(caseInsensitiveCompare:)] objectAtIndex:indexPath.row-6];
+            cell.detailTextLabel.text = [NSString stringWithFormat:@"%@", [self.motionData objectForKey:cell.textLabel.text]];
+            break;
+    }
     
     return cell;
 }
@@ -166,69 +181,6 @@
 }
 */
 
-- (void) uploadData
-{
-    NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:[NSURL URLWithString:@"http://129.169.245.174/~DavidCui/Direct/uploadDataUsage.php"]];
-    
-    NSDateFormatter *formatter = [[NSDateFormatter alloc] init];
-    [formatter setDateFormat:@"Y-m-d H:mm:s"];
-    NSLog(@"%@",[formatter stringFromDate:[NSDate date]]);
-    
-    NSManagedObjectContext *context = [self managedObjectContext];
-    
-    NSFetchRequest *allData = [[NSFetchRequest alloc] init];
-    [allData setEntity:[NSEntityDescription entityForName:@"DataStorage" inManagedObjectContext:context]];
-    [allData setIncludesPropertyValues:NO]; //only fetch the managedObjectID
-    
-    NSError * error = nil;
-    NSArray * data = [context executeFetchRequest:allData error:&error];
-    //error handling goes here
-    int totalCounter = 0;
-    
-
-    
-    for (DataStorage * dt in data) {
-        NSString *post = [NSString stringWithFormat:@"deviceID=1&timeStamp=%@&wifiSent=%@&wifiReceived=%@&wwanSent=%@&wwanReceived=%@&",
-                          [formatter stringFromDate:[NSDate date]],dt.wifiSent,dt.wifiReceived,dt.wwanSent,dt.wwanReceived];
-        NSData *postData = [post dataUsingEncoding:NSASCIIStringEncoding allowLossyConversion:YES];
-        NSString *postLength = [NSString stringWithFormat:@"%lu", (unsigned long)[postData length]];
-        [request setHTTPMethod:@"POST"];
-        [request setValue:postLength forHTTPHeaderField:@"Content-Length"];
-        [request setValue:@"application/x-www-form-urlencoded" forHTTPHeaderField:@"Content-Type"];
-        [request setHTTPBody:postData];
-        
-        
-        
-        //[context deleteObject:dt];
-        
-        NSError *error;
-        NSData *returnData = [NSURLConnection sendSynchronousRequest:request returningResponse:nil     error:&error];
-        if (returnData)
-        {
-            NSString *json=[[NSString alloc] initWithData:returnData encoding:NSUTF8StringEncoding];
-            NSLog(@"Resp string: %@",json);
-        }
-        else
-        {
-            NSLog(@"Error: %@", error);
-        }
-        
-        
-        totalCounter++;
-        NSLog(@"Uploaded No.%d", totalCounter);
-    }
-    NSError *saveError = nil;
-    [context save:&saveError];
-    //more error handling here
-    
-
-    
-    
-    
-    
-    
-}
-
 - (void)reloadData
 {
     // Reload table data
@@ -251,8 +203,9 @@
 
 - (void) reloadDataCounters
 {
-    [self.locationMgr startUpdatingLocation];
-    dataCounters = self.getDataCounters;
+    [self.locationManager startUpdatingLocation];
+    self.dataCounters = self.getDataCounters;
+    [self startDeviceUpdate];
     [self reloadData];
 }
 
@@ -262,65 +215,26 @@
     DataStorage *dataUsageInfo = [NSEntityDescription
                                       insertNewObjectForEntityForName:@"DataStorage" inManagedObjectContext:context];
     dataUsageInfo.timeStamp =[NSDate date];
-    dataUsageInfo.wifiSent = dataCounters[0];
-    dataUsageInfo.wifiReceived =  dataCounters[1];
-    dataUsageInfo.wwanSent = dataCounters[2];
-    dataUsageInfo.wwanReceived = dataCounters[3];
+    dataUsageInfo.wifiSent = self.dataCounters[0];
+    dataUsageInfo.wifiReceived =  self.dataCounters[1];
+    dataUsageInfo.wwanSent = self.dataCounters[2];
+    dataUsageInfo.wwanReceived = self.dataCounters[3];
     
     dataUsageInfo.gpsLatitude = [NSNumber numberWithDouble:self.lastLocation.coordinate.latitude];
     dataUsageInfo.gpsLongitude = [NSNumber numberWithDouble:self.lastLocation.coordinate.longitude];
+    dataUsageInfo.estimateSpeed = [NSNumber numberWithDouble:self.lastLocation.speed];
     
     // Count all entities
     NSFetchRequest *fetchRequest = [[NSFetchRequest alloc] init];
-    [fetchRequest setEntity:[NSEntityDescription entityForName:@"DataStorage" inManagedObjectContext:managedObjectContext]];
+    [fetchRequest setEntity:[NSEntityDescription entityForName:@"DataStorage" inManagedObjectContext:self.managedObjectContext]];
     [fetchRequest setIncludesSubentities:NO]; //Omit subentities. Default is YES (i.e. include subentities)
     
     NSError *err;
-    NSUInteger count = [managedObjectContext countForFetchRequest:fetchRequest error:&err];
+    NSUInteger count = [self.managedObjectContext countForFetchRequest:fetchRequest error:&err];
     NSLog(@"Totoal entity Count = %lu",(unsigned long)count);
     if(count == NSNotFound) {
         //Handle error
     }
-
-//    NSError *error;
-//    if (![context save:&error]) {
-//        NSLog(@"Whoops, couldn't save: %@", [error localizedDescription]);
-//    }
-//    
-//    NSFetchRequest *fetchRequest = [[NSFetchRequest alloc] init];
-//    NSEntityDescription *entity = [NSEntityDescription
-//                                   entityForName:@"DataStorage" inManagedObjectContext:context];
-//    [fetchRequest setEntity:entity];
-//    NSArray *fetchedObjects = [context executeFetchRequest:fetchRequest error:&error];
-//    for (DataStorage *info in fetchedObjects) {
-//        NSLog(@"timeStamp: %@", info.timeStamp);
-//        NSLog(@"wifiSent: %@", info.wifiSent);
-//        NSLog(@"wifiReceived: %@", info.wifiReceived);
-//        NSLog(@"wwanSent: %@", info.wwanSent);
-//        NSLog(@"wwanReceived: %@", info.wwanReceived);
-//        NSLog(@"gpsLatitude: %@", info.gpsLatitude);
-//        NSLog(@"gpsLongitude: %@", info.gpsLongitude);
-//    }
-}
-
-- (void) clearCoreData
-{
-    NSManagedObjectContext *context = [self managedObjectContext];
-    
-    NSFetchRequest *allData = [[NSFetchRequest alloc] init];
-    [allData setEntity:[NSEntityDescription entityForName:@"DataStorage" inManagedObjectContext:context]];
-    [allData setIncludesPropertyValues:NO]; //only fetch the managedObjectID
-    
-    NSError * error = nil;
-    NSArray * data = [context executeFetchRequest:allData error:&error];
-    //error handling goes here
-    for (NSManagedObject * dt in data) {
-        [context deleteObject:dt];
-    }
-    NSError *saveError = nil;
-    [context save:&saveError];
-    //more error handling here
-    NSLog(@"Cleared all data at %@", [NSDate date]);
 }
 
 - (NSArray *)getDataCounters
@@ -399,7 +313,7 @@
         NSLog(@"New location: %f, %f",
               self.lastLocation.coordinate.latitude,
               self.lastLocation.coordinate.longitude);
-//        [self.locationMgr stopUpdatingLocation];
+        [self.locationManager stopUpdatingLocation];
     }
     
     CLLocation *currentLocation = newLocation;
@@ -412,7 +326,7 @@
 //        self.labelLatitude.text = [NSString stringWithFormat:@"%.8f", currentLocation.coordinate.latitude];
     }
     [self.tableView reloadData];
-    [self.locationMgr stopUpdatingLocation];
+    [self.locationManager stopUpdatingLocation];
     
     
     [self saveToCoreData];
@@ -434,6 +348,47 @@
 //            NSLog(@"%@", error.debugDescription);
 //        }
 //    } ];
+}
+
+#pragma mark - Motion Sensors
+
+- (void)startDeviceUpdate {
+    [motionManager startDeviceMotionUpdatesToQueue:[NSOperationQueue currentQueue] withHandler:^(CMDeviceMotion *motion, NSError *error) {
+        
+        [self.motionData setObject:[NSNumber numberWithDouble:motion.gravity.x] forKey:@"gravity.x"];
+        [self.motionData setObject:[NSNumber numberWithDouble:motion.gravity.y] forKey:@"gravity.y"];
+        [self.motionData setObject:[NSNumber numberWithDouble:motion.gravity.z] forKey:@"gravity.z"];
+        
+        [self.motionData setObject:[NSNumber numberWithDouble:motion.attitude.yaw] forKey:@"attitude.yaw"];
+        [self.motionData setObject:[NSNumber numberWithDouble:motion.attitude.pitch] forKey:@"attitude.pitch"];
+        [self.motionData setObject:[NSNumber numberWithDouble:motion.attitude.roll] forKey:@"attitude.roll"];
+        
+        [self stopMotionDetection];
+    }];
+    
+    [motionManager startAccelerometerUpdatesToQueue:[NSOperationQueue currentQueue] withHandler:^(CMAccelerometerData *accelerometerData, NSError *error) {
+        self.motionData = [[NSMutableDictionary alloc]init];
+        
+        [self.motionData setObject:[NSNumber numberWithDouble:accelerometerData.acceleration.x] forKey:@"acceleration.x"];
+        [self.motionData setObject:[NSNumber numberWithDouble:accelerometerData.acceleration.y] forKey:@"acceleration.y"];
+        [self.motionData setObject:[NSNumber numberWithDouble:accelerometerData.acceleration.z] forKey:@"acceleration.z"];
+        
+        [self stopAccelerometerDetection];
+    }];
+}
+
+- (void) stopAccelerometerDetection
+{
+    [self.tableView reloadData];
+
+    [motionManager stopAccelerometerUpdates];
+}
+
+- (void) stopMotionDetection
+{
+    [self.tableView reloadData];
+    
+    [motionManager stopDeviceMotionUpdates];
 }
 
 @end

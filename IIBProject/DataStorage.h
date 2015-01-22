@@ -2,7 +2,7 @@
 //  DataStorage.h
 //  IIBProject
 //
-//  Created by Zhihao Cui on 15/01/2015.
+//  Created by Zhihao Cui on 22/01/2015.
 //  Copyright (c) 2015 Zhihao Cui. All rights reserved.
 //
 
@@ -19,5 +19,6 @@
 @property (nonatomic, retain) NSNumber * wifiSent;
 @property (nonatomic, retain) NSNumber * wwanReceived;
 @property (nonatomic, retain) NSNumber * wwanSent;
+@property (nonatomic, retain) NSNumber * estimateSpeed;
 
 @end

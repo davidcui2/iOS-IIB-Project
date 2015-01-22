@@ -11,6 +11,8 @@
 #import "DataStorage.h"
 // For GPS
 #import <CoreLocation/CoreLocation.h>
+// For Accelerometer
+#import <CoreMotion/CoreMotion.h>
 
 
 @protocol PassBackManagedObjectContextDelegate
@@ -25,7 +27,7 @@
 
 @property (nonatomic,strong) NSManagedObjectContext* managedObjectContext;
 
-@property (nonatomic, retain) CLLocationManager *locationMgr;
+@property (nonatomic, retain) CLLocationManager *locationManager;
 @property (nonatomic, retain) CLLocation *lastLocation;
 
 @end
