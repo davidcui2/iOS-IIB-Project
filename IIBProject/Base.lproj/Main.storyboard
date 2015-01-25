@@ -262,24 +262,24 @@
                                 <exclude reference="BCu-Cd-JCY"/>
                             </mask>
                             <mask key="constraints">
+                                <exclude reference="PVk-V4-qGa"/>
+                                <exclude reference="SWE-c4-9KU"/>
+                                <exclude reference="ycT-wa-PdD"/>
+                                <exclude reference="WIl-yW-JmW"/>
+                                <exclude reference="djF-Rw-c8h"/>
                                 <exclude reference="9xY-Hy-v8J"/>
                                 <exclude reference="PD3-BO-mRk"/>
                                 <exclude reference="dHJ-CI-Evg"/>
                                 <exclude reference="eBc-8h-Z3p"/>
-                                <exclude reference="kP0-wQ-Sw7"/>
-                                <exclude reference="qWT-cz-SaF"/>
-                                <exclude reference="WIl-yW-JmW"/>
-                                <exclude reference="djF-Rw-c8h"/>
-                                <exclude reference="SWE-c4-9KU"/>
-                                <exclude reference="ycT-wa-PdD"/>
                                 <exclude reference="56V-FF-AFt"/>
                                 <exclude reference="aNI-Oa-3z7"/>
-                                <exclude reference="PVk-V4-qGa"/>
                                 <exclude reference="3fC-6P-Jg5"/>
                                 <exclude reference="Hxk-js-hwK"/>
                                 <exclude reference="bsn-dx-JFU"/>
                                 <exclude reference="9U9-FH-nVS"/>
                                 <exclude reference="mxy-A9-MYf"/>
+                                <exclude reference="kP0-wQ-Sw7"/>
+                                <exclude reference="qWT-cz-SaF"/>
                             </mask>
                         </variation>
                         <variation key="heightClass=regular-widthClass=compact">
@@ -288,24 +288,24 @@
                                 <include reference="BCu-Cd-JCY"/>
                             </mask>
                             <mask key="constraints">
+                                <include reference="PVk-V4-qGa"/>
+                                <include reference="SWE-c4-9KU"/>
+                                <include reference="ycT-wa-PdD"/>
+                                <include reference="WIl-yW-JmW"/>
+                                <include reference="djF-Rw-c8h"/>
                                 <include reference="9xY-Hy-v8J"/>
                                 <include reference="PD3-BO-mRk"/>
                                 <include reference="dHJ-CI-Evg"/>
                                 <include reference="eBc-8h-Z3p"/>
-                                <include reference="kP0-wQ-Sw7"/>
-                                <include reference="qWT-cz-SaF"/>
-                                <include reference="WIl-yW-JmW"/>
-                                <include reference="djF-Rw-c8h"/>
-                                <include reference="SWE-c4-9KU"/>
-                                <include reference="ycT-wa-PdD"/>
                                 <include reference="56V-FF-AFt"/>
                                 <include reference="aNI-Oa-3z7"/>
-                                <include reference="PVk-V4-qGa"/>
                                 <include reference="3fC-6P-Jg5"/>
                                 <include reference="Hxk-js-hwK"/>
                                 <include reference="bsn-dx-JFU"/>
                                 <include reference="9U9-FH-nVS"/>
                                 <include reference="mxy-A9-MYf"/>
+                                <include reference="kP0-wQ-Sw7"/>
+                                <include reference="qWT-cz-SaF"/>
                             </mask>
                         </variation>
                     </view>

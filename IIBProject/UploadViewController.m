@@ -86,11 +86,10 @@ NSUUID * deviceUUID;
         return;
     }
     
-
-    
     NSString* fullAddress = [NSString stringWithFormat:@"http://%@/~DavidCui/Direct/uploadDataUsage.php", self.ipAddress];
     
-    NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:[NSURL URLWithString:fullAddress]];
+    IIBPostRequest *newRequest = [[IIBPostRequest alloc]initWithURLString:fullAddress];
+    [newRequest setPostKey:@"UUID" withValue:deviceUUID.UUIDString];
     
     // Count all entities
     NSFetchRequest *fetchRequest = [[NSFetchRequest alloc] init];
@@ -132,17 +131,19 @@ NSUUID * deviceUUID;
         int currentCounter = 0;
         
         for (DataStorage * dt in data) {
-            NSString *post = [NSString stringWithFormat:@"UUID=%@&timeStamp=%@&wifiSent=%@&wifiReceived=%@&wwanSent=%@&wwanReceived=%@&gpsLatitude=%@&gpsLongitude=%@&estimateSpeed=%@&", deviceUUID.UUIDString,
-                              [formatter stringFromDate:dt.timeStamp],dt.wifiSent,dt.wifiReceived,dt.wwanSent,dt.wwanReceived,dt.gpsLatitude,dt.gpsLongitude,dt.estimateSpeed];
-            NSData *postData = [post dataUsingEncoding:NSASCIIStringEncoding allowLossyConversion:YES];
-            NSString *postLength = [NSString stringWithFormat:@"%lu", (unsigned long)[postData length]];
-            [request setHTTPMethod:@"POST"];
-            [request setValue:postLength forHTTPHeaderField:@"Content-Length"];
-            [request setValue:@"application/x-www-form-urlencoded" forHTTPHeaderField:@"Content-Type"];
-            [request setHTTPBody:postData];
+            [newRequest setPostKey:@"timeStamp" withValue:[formatter stringFromDate:dt.timeStamp]];
+            [newRequest setPostKey:@"wifiSent" withValue:[dt.wifiSent stringValue]];
+            [newRequest setPostKey:@"wifiReceived" withValue:[dt.wifiReceived stringValue]];
+            [newRequest setPostKey:@"wwanSent" withValue:[dt.wwanSent stringValue]];
+            [newRequest setPostKey:@"wwanReceived" withValue:[dt.wwanReceived stringValue]];
+            [newRequest setPostKey:@"gpsLatitude" withValue:[dt.gpsLatitude stringValue]];
+            [newRequest setPostKey:@"gpsLongitude" withValue:[dt.gpsLongitude stringValue]];
+            [newRequest setPostKey:@"estimateSpeed" withValue:[dt.estimateSpeed stringValue]];
+
+            [newRequest prepareForPost];
             
             NSError *error;
-            NSData *returnData = [NSURLConnection sendSynchronousRequest:request returningResponse:nil     error:&error];
+            NSData *returnData = [NSURLConnection sendSynchronousRequest:newRequest returningResponse:nil     error:&error];
             if (returnData)
             {
                                 NSString *json=[[NSString alloc] initWithData:returnData encoding:NSUTF8StringEncoding];
@@ -293,7 +294,8 @@ NSUUID * deviceUUID;
             
             NSString* fullAddress = [NSString stringWithFormat:@"http://%@/~DavidCui/Direct/uploadActivity.php", self.ipAddress];
             
-            NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:[NSURL URLWithString:fullAddress]];
+            IIBPostRequest *newRequest = [[IIBPostRequest alloc]initWithURLString:fullAddress];
+            [newRequest setPostKey:@"UUID" withValue:deviceUUID.UUIDString];
             
             // Upload in background
             NSOperationQueue *progressQueue = [[NSOperationQueue alloc] init];
@@ -327,18 +329,15 @@ NSUUID * deviceUUID;
                         
                         if (activity.confidence == CMMotionActivityConfidenceHigh) confidence = @"High";
                         else confidence = @"Medium";
+
+                        [newRequest setPostKey:@"startTime" withValue:[formatter stringFromDate:activity.startDate]];
+                        [newRequest setPostKey:@"activityName" withValue:activityName];
+                        [newRequest setPostKey:@"confidenceLevel" withValue:confidence];
                         
-                        NSString *post = [NSString stringWithFormat:@"UUID=%@&startTime=%@&activityName=%@&confidenceLevel=%@&", deviceUUID.UUIDString,
-                                          [formatter stringFromDate:activity.startDate], activityName, confidence];
-                        NSData *postData = [post dataUsingEncoding:NSASCIIStringEncoding allowLossyConversion:YES];
-                        NSString *postLength = [NSString stringWithFormat:@"%lu", (unsigned long)[postData length]];
-                        [request setHTTPMethod:@"POST"];
-                        [request setValue:postLength forHTTPHeaderField:@"Content-Length"];
-                        [request setValue:@"application/x-www-form-urlencoded" forHTTPHeaderField:@"Content-Type"];
-                        [request setHTTPBody:postData];
+                        [newRequest prepareForPost];
                         
                         NSError *error;
-                        NSData *returnData = [NSURLConnection sendSynchronousRequest:request returningResponse:nil     error:&error];
+                        NSData *returnData = [NSURLConnection sendSynchronousRequest:newRequest returningResponse:nil     error:&error];
                         if (returnData)
                         {
                             //                            NSString *json=[[NSString alloc] initWithData:returnData encoding:NSUTF8StringEncoding];

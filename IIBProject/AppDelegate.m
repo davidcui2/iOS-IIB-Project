@@ -41,8 +41,8 @@
         [self.locationManager requestAlwaysAuthorization];
     }
     self.locationManager.desiredAccuracy = kCLLocationAccuracyBest;
-    // Only report to location manager if the user has traveled 1000 meters
-    self.locationManager.distanceFilter = 200.0f;
+    // Only report to location manager if the user has traveled 1000 meters, which seems to be the minimum report distance!!
+    self.locationManager.distanceFilter = 1000.0f;
     self.locationManager.delegate = self;
     self.locationManager.activityType = CLActivityTypeAutomotiveNavigation;
     
@@ -102,6 +102,8 @@
         if (!self.lastLocation) {
             self.lastLocation = newLocation;
         }
+    
+    NSLog(@"Distance from last update: %f m",[self.lastLocation distanceFromLocation:newLocation]);
         
         if (newLocation.coordinate.latitude != self.lastLocation.coordinate.latitude &&
             newLocation.coordinate.longitude != self.lastLocation.coordinate.longitude) {
@@ -122,10 +124,6 @@
         
         [self saveToCoreData];
         
-        if (self.locationManager.location.speed > 10) self.locationManager.distanceFilter = 2000.0f;
-        else if (self.locationManager.location.speed > 6) self.locationManager.distanceFilter = 1000.0f;
-        else if (self.locationManager.location.speed > 3) self.locationManager.distanceFilter = 500.0f;
-        else self.locationManager.distanceFilter = 200.0f;
 //    }
 //    else
 //    {

@@ -11,6 +11,7 @@
 #import <CoreMotion/CoreMotion.h>
 #import "DataStorage.h"
 #import "MotionActivityRecord.h"
+#import "IIBPostRequest.h"
 
 @interface UploadViewController : UIViewController <UIAlertViewDelegate>
 
