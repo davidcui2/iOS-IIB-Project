@@ -154,6 +154,9 @@ NSUUID * deviceUUID;
             }
             else
             {
+                dispatch_async(dispatch_get_main_queue(), ^{
+                    [self addToLog:[NSString stringWithFormat:@"Error: %@", error]];
+                });
                 NSLog(@"Error: %@", error);
                 break;
             }
@@ -345,6 +348,9 @@ NSUUID * deviceUUID;
                         }
                         else
                         {
+                            dispatch_async(dispatch_get_main_queue(), ^{
+                                [self addToLog:[NSString stringWithFormat:@"Error: %@", error]];
+                            });
                             NSLog(@"Error: %@", error);
                             uploadOK = 0;
                             break;
