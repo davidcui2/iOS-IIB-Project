@@ -48,8 +48,21 @@ NSUUID * deviceUUID;
         _motionActivitiyManager = [[CMMotionActivityManager alloc]init];
     }
     
+    // Count all entities
+    NSFetchRequest *fetchRequest = [[NSFetchRequest alloc] init];
+    [fetchRequest setEntity:[NSEntityDescription entityForName:@"DataStorage" inManagedObjectContext:self.managedObjectContext]];
+    [fetchRequest setIncludesSubentities:NO]; //Omit subentities. Default is YES (i.e. include subentities)
+    
+    NSError *err;
+    NSUInteger count = [self.managedObjectContext countForFetchRequest:fetchRequest error:&err];
+    [self addToLog:[NSString stringWithFormat:@"DataStorage Total Count = %lu",(unsigned long)count]];
+    NSLog(@"Count = %lu",(unsigned long)count);
+    if(count == NSNotFound) {
+        //Handle error
+    }
+    
     // TEST!!!
-//    [self updateLastUpdateDate:[NSDate dateWithTimeIntervalSinceNow:-1*3600*24]];
+    //    [self updateLastUpdateDate:[NSDate dateWithTimeIntervalSinceNow:-1*3600*24]];
     
 }
 
@@ -82,7 +95,7 @@ NSUUID * deviceUUID;
                                                 cancelButtonTitle:@"Back"
                                                 otherButtonTitles:nil];
         [message show];
-
+        
         return;
     }
     
@@ -139,18 +152,18 @@ NSUUID * deviceUUID;
             [newRequest setPostKey:@"gpsLatitude" withValue:[dt.gpsLatitude stringValue]];
             [newRequest setPostKey:@"gpsLongitude" withValue:[dt.gpsLongitude stringValue]];
             [newRequest setPostKey:@"estimateSpeed" withValue:[dt.estimateSpeed stringValue]];
-
+            
             [newRequest prepareForPost];
             
             NSError *error;
             NSData *returnData = [NSURLConnection sendSynchronousRequest:newRequest returningResponse:nil     error:&error];
             if (returnData)
             {
-                                NSString *json=[[NSString alloc] initWithData:returnData encoding:NSUTF8StringEncoding];
-                                NSLog(@"Resp string: %@",json);
+                NSString *json=[[NSString alloc] initWithData:returnData encoding:NSUTF8StringEncoding];
+                NSLog(@"Resp string: %@",json);
                 
                 [context deleteObject:dt];
-
+                
             }
             else
             {
@@ -209,7 +222,7 @@ NSUUID * deviceUUID;
 
 - (IBAction)startEditIP:(id)sender {
     [self.textField becomeFirstResponder];
-
+    
 }
 
 - (IBAction)setIP:(id)sender {
@@ -228,7 +241,7 @@ NSUUID * deviceUUID;
 {
     // Get last uploaded time
     NSDate *lastUpdateTime;
-
+    
     NSManagedObjectContext *context = [self managedObjectContext];
     
     NSFetchRequest *allData = [[NSFetchRequest alloc] init];
@@ -256,7 +269,7 @@ NSUUID * deviceUUID;
 
 - (void)uploadMotionActivity
 {
-     NSDate *lastUpdateTime = [self getLastUpdateTime];
+    NSDate *lastUpdateTime = [self getLastUpdateTime];
     
     
     UIActivityIndicatorView *activityView=[[UIActivityIndicatorView alloc]     initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleGray];
@@ -332,7 +345,7 @@ NSUUID * deviceUUID;
                         
                         if (activity.confidence == CMMotionActivityConfidenceHigh) confidence = @"High";
                         else confidence = @"Medium";
-
+                        
                         [newRequest setPostKey:@"startTime" withValue:[formatter stringFromDate:activity.startDate]];
                         [newRequest setPostKey:@"activityName" withValue:activityName];
                         [newRequest setPostKey:@"confidenceLevel" withValue:confidence];
@@ -410,12 +423,12 @@ NSUUID * deviceUUID;
     else {
         NSManagedObjectContext *context = [self managedObjectContext];
         MotionActivityRecord *motionActivityRecord = [NSEntityDescription
-                                      insertNewObjectForEntityForName:@"MotionActivityRecord" inManagedObjectContext:context];
+                                                      insertNewObjectForEntityForName:@"MotionActivityRecord" inManagedObjectContext:context];
         motionActivityRecord.lastUpdateTime = lastUpdateDate;
     }
     NSError *saveError = nil;
     [context save:&saveError];
-   }
+}
 
 - (void)alertView:(UIAlertView *)alertView clickedButtonAtIndex:(NSInteger)buttonIndex
 {

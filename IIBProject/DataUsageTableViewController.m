@@ -235,6 +235,12 @@ CMMotionManager *motionManager;
     if(count == NSNotFound) {
         //Handle error
     }
+    
+    NSError *saveError = nil;
+    if (![context save:&saveError]) {
+        // Handle the error.
+//        NSLog(saveError.localizedDescription);
+    }
 }
 
 - (NSArray *)getDataCounters

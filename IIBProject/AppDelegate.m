@@ -49,7 +49,7 @@
     // Start monitoring significant locations here as default, will switch to
     // update locations on enter foreground
     [self.locationManager startMonitoringSignificantLocationChanges];
-
+    
     return YES;
 }
 
@@ -97,63 +97,23 @@
     // old, too close to the previous one, too inaccurate and so forth according to your own
     // application design.
     
-//    if (isInBackground)
-//    {
-        if (!self.lastLocation) {
-            self.lastLocation = newLocation;
-        }
+    if (!self.lastLocation) {
+        self.lastLocation = newLocation;
+    }
     
     NSLog(@"Distance from last update: %f m",[self.lastLocation distanceFromLocation:newLocation]);
-        
-        if (newLocation.coordinate.latitude != self.lastLocation.coordinate.latitude &&
-            newLocation.coordinate.longitude != self.lastLocation.coordinate.longitude) {
-            self.lastLocation = newLocation;
-        }
-        
-        CLLocation *currentLocation = newLocation;
-        NSLog(@"New location: %f, %f",
-              self.lastLocation.coordinate.latitude,
-              self.lastLocation.coordinate.longitude);
-        
-        if (currentLocation != nil) {
-            //        self.labelLongitude.text = [NSString stringWithFormat:@"%.8f", currentLocation.coordinate.longitude];
-            //        self.labelLatitude.text = [NSString stringWithFormat:@"%.8f", currentLocation.coordinate.latitude];
-        }
-        
-        self.dataCounters = self.getDataCounters;
-        
-        [self saveToCoreData];
-        
-//    }
-//    else
-//    {
-//        if (!self.lastLocation) {
-//            self.lastLocation = newLocation;
-//        }
-//        
-//        if (newLocation.coordinate.latitude != self.lastLocation.coordinate.latitude &&
-//            newLocation.coordinate.longitude != self.lastLocation.coordinate.longitude) {
-//            self.lastLocation = newLocation;
-//            NSLog(@"New location: %f, %f",
-//                  self.lastLocation.coordinate.latitude,
-//                  self.lastLocation.coordinate.longitude);
-//            //        [self.locationMgr stopUpdatingLocation];
-//        }
-//        
-//        CLLocation *currentLocation = newLocation;
-//        NSLog(@"New location: %f, %f",
-//              self.lastLocation.coordinate.latitude,
-//              self.lastLocation.coordinate.longitude);
-//        
-//        if (currentLocation != nil) {
-//            //        self.labelLongitude.text = [NSString stringWithFormat:@"%.8f", currentLocation.coordinate.longitude];
-//            //        self.labelLatitude.text = [NSString stringWithFormat:@"%.8f", currentLocation.coordinate.latitude];
-//        }
-//        
-//        self.dataCounters = self.getDataCounters;
-//        
-//        [self saveToCoreData];
-//    }
+    
+    if (newLocation.coordinate.latitude != self.lastLocation.coordinate.latitude &&
+        newLocation.coordinate.longitude != self.lastLocation.coordinate.longitude) {
+        self.lastLocation = newLocation;
+    }
+    
+    NSLog(@"New location: %f, %f", self.lastLocation.coordinate.latitude, self.lastLocation.coordinate.longitude);
+    
+    self.dataCounters = self.getDataCounters;
+    
+    [self saveToCoreData];
+    
 }
 
 - (void) saveToCoreData
@@ -182,7 +142,10 @@
     if(count == NSNotFound) {
         //Handle error
     }
+    
+    [self saveContext];
 }
+
 - (NSArray *)getDataCounters
 {
     BOOL   success;
@@ -204,7 +167,7 @@
         while (cursor != NULL)
         {
             name=[NSString stringWithFormat:@"%s",cursor->ifa_name];
-//            NSLog(@"ifa_name %s == %@\n", cursor->ifa_name,name);
+            //            NSLog(@"ifa_name %s == %@\n", cursor->ifa_name,name);
             // names of interfaces: en0 is WiFi ,pdp_ip0 is WWAN
             
             if (cursor->ifa_addr->sa_family == AF_LINK)
