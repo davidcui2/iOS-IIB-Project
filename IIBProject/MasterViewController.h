@@ -10,6 +10,7 @@
 #import <CoreData/CoreData.h>
 #import "DataUsageTableViewController.h"
 #import "UploadViewController.h"
+#import "MapMasterTableViewController.h"
 
 @interface MasterViewController : UITableViewController <NSFetchedResultsControllerDelegate>
 

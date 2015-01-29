@@ -37,7 +37,7 @@ NSUUID * deviceUUID;
     self.progressBar.hidden = 1;
     
     //default
-    self.defaultAddress = @"192.168.165.100";
+    self.defaultAddress = @"www.zhihaodatatrack.com";
     self.ipAddress = self.defaultAddress;
     self.textField.text = self.ipAddress;
     
@@ -99,7 +99,7 @@ NSUUID * deviceUUID;
         return;
     }
     
-    NSString* fullAddress = [NSString stringWithFormat:@"http://%@/~DavidCui/Direct/uploadDataUsage.php", self.ipAddress];
+    NSString* fullAddress = [NSString stringWithFormat:@"http://%@/Direct/uploadDataUsage.php", self.ipAddress];
     
     IIBPostRequest *newRequest = [[IIBPostRequest alloc]initWithURLString:fullAddress];
     [newRequest setPostKey:@"UUID" withValue:deviceUUID.UUIDString];
@@ -161,7 +161,7 @@ NSUUID * deviceUUID;
             {
                 NSString *json=[[NSString alloc] initWithData:returnData encoding:NSUTF8StringEncoding];
                 NSLog(@"Resp string: %@",json);
-                
+
                 [context deleteObject:dt];
                 
             }
@@ -176,6 +176,9 @@ NSUUID * deviceUUID;
             
             currentCounter++;
             NSLog(@"Uploaded No.%d", currentCounter);
+            
+            // TEST!!!!!!!
+//            if(currentCounter > 100) break;
             
             
             float progressValue = (float)currentCounter/count;

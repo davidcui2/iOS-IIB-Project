@@ -40,7 +40,9 @@
     if ([self.locationManager respondsToSelector:@selector(requestAlwaysAuthorization)]) {
         [self.locationManager requestAlwaysAuthorization];
     }
-    self.locationManager.desiredAccuracy = kCLLocationAccuracyBest;
+    self.locationManager.pausesLocationUpdatesAutomatically = YES; // Suggested by Apple
+    self.locationManager.activityType = CLActivityTypeOtherNavigation;
+    self.locationManager.desiredAccuracy = kCLLocationAccuracyNearestTenMeters;
     // Only report to location manager if the user has traveled 1000 meters, which seems to be the minimum report distance!!
     self.locationManager.distanceFilter = 1000.0f;
     self.locationManager.delegate = self;

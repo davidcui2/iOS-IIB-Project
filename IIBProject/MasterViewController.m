@@ -7,15 +7,12 @@
 //
 
 #import "MasterViewController.h"
-#import "DetailViewController.h"
 
 @interface MasterViewController ()
 
 @end
 
 @implementation MasterViewController
-
-@synthesize managedObjectContext;
 
 - (void)awakeFromNib {
     [super awakeFromNib];
@@ -105,18 +102,20 @@
 
 - (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender {
     if ([[segue identifier] isEqualToString:@"showDetail"]) {
-        NSIndexPath *indexPath = [self.tableView indexPathForSelectedRow];
-        NSManagedObject *object = [[self fetchedResultsController] objectAtIndexPath:indexPath];
-        [[segue destinationViewController] setDetailItem:object];
     }
     else if ([[segue identifier] isEqualToString:@"showDataUsage"]) {
         DataUsageTableViewController *vc = [segue destinationViewController];
-        [vc setManagedObjectContext:managedObjectContext];
+        [vc setManagedObjectContext:_managedObjectContext];
     }
     else if ([[segue identifier] isEqualToString:@"showUpload"]) {
         UploadViewController *vc = [segue destinationViewController];
-        [vc setManagedObjectContext:managedObjectContext];
+        [vc setManagedObjectContext:_managedObjectContext];
     }
+    else if ([[segue identifier] isEqualToString:@"showMapMaster"]) {
+        MapMasterTableViewController *vc = [segue destinationViewController];
+        [vc setManagedObjectContext:_managedObjectContext];
+    }
+    
 }
 //
 //-(IBAction)prepareForUnwind:(UIStoryboardSegue *)segue {
@@ -128,7 +127,7 @@
 - (void)recieveData:(NSManagedObjectContext *)theData {
     NSLog(@"Receiving Data");
     //Do something with data here
-    managedObjectContext = theData;
+    _managedObjectContext = theData;
     
     NSManagedObjectContext *context = [self managedObjectContext];
     NSError *error;
