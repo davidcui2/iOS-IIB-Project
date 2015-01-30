@@ -460,6 +460,7 @@
 				INFOPLIST_FILE = IIBProject/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE = "3f5e8a8c-c1df-42f5-8e3b-a9485e7f42b6";
 			};
 			name = Debug;
 		};
@@ -470,6 +471,7 @@
 				INFOPLIST_FILE = IIBProject/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE = "3f5e8a8c-c1df-42f5-8e3b-a9485e7f42b6";
 			};
 			name = Release;
 		};

@@ -36,6 +36,14 @@ NSUUID * deviceUUID;
     
     self.progressBar.hidden = 1;
     
+    // Get the stored data before the view loads
+    NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
+    
+    if (![defaults boolForKey:@"deleteLocalValue"]) {
+        [defaults setBool:NO forKey:@"deleteLocalValue"];
+    }
+    _deleteLocalSwitch.on = [defaults boolForKey:@"deleteLocalValue"];
+    
     //default
     self.defaultAddress = @"www.zhihaodatatrack.com";
     self.ipAddress = self.defaultAddress;
@@ -161,8 +169,10 @@ NSUUID * deviceUUID;
             {
                 NSString *json=[[NSString alloc] initWithData:returnData encoding:NSUTF8StringEncoding];
                 NSLog(@"Resp string: %@",json);
-
-                [context deleteObject:dt];
+                
+                if (_deleteLocalSwitch.on) {
+                    [context deleteObject:dt];
+                }
                 
             }
             else
@@ -187,6 +197,17 @@ NSUUID * deviceUUID;
                 dispatch_async(dispatch_get_main_queue(), ^{
                     self.progressBar.hidden = 1;
                     [self addToLog:[NSString stringWithFormat:@"Uploaded %d entries", currentCounter]];
+                    
+                    
+                    if ([CMMotionActivityManager isActivityAvailable]) {
+                        UIAlertView *message = [[UIAlertView alloc] initWithTitle:@"Further Upload"
+                                                                          message:@"Do you want to upload device activity?"
+                                                                         delegate:self
+                                                                cancelButtonTitle:@"Cancel"
+                                                                otherButtonTitles:@"Yes", nil];
+                        [message show];
+                        
+                    }
                 });
                 
             }
@@ -202,21 +223,15 @@ NSUUID * deviceUUID;
     }];
     
     
-    if ([CMMotionActivityManager isActivityAvailable]) {
-        UIAlertView *message = [[UIAlertView alloc] initWithTitle:@"Further Upload"
-                                                          message:@"Do you want to upload device activity?"
-                                                         delegate:self
-                                                cancelButtonTitle:@"Cancel"
-                                                otherButtonTitles:@"Yes", nil];
-        [message show];
-        
-    }
+    
     
 }
 
 - (void)addToLog:(NSString *)input
 {
-    [[self.logText textStorage] appendAttributedString:[[NSAttributedString alloc] initWithString:[NSString stringWithFormat:@"%@: %@\n",[NSDate date],input]]];
+    NSDateFormatter *formatter = [[NSDateFormatter alloc] init];
+    [formatter setDateFormat:@"Y-M-D H:mm:s"];
+    [[self.logText textStorage] appendAttributedString:[[NSAttributedString alloc] initWithString:[NSString stringWithFormat:@"%@: %@\n",[formatter stringFromDate:[NSDate date]],input]]];
 }
 
 - (IBAction)clearLogs:(id)sender {
@@ -440,6 +455,10 @@ NSUUID * deviceUUID;
     if ([title isEqualToString:@"Yes"]) {
         [self uploadMotionActivity];
     }
+}
+
+- (IBAction)deleteLocalSwitchValueChanged:(id)sender {
+    [[NSUserDefaults standardUserDefaults] setBool:_deleteLocalSwitch.on forKey:@"deleteLocalValue"];
 }
 
 /*
