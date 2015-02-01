@@ -41,7 +41,7 @@
         MapAnnotation *mapAnnotation = [[MapAnnotation alloc]initWithLocation:CLLocationCoordinate2DMake([dt.gpsLatitude doubleValue], [dt.gpsLongitude doubleValue])];
         mapAnnotation.dataStorage = dt;
         NSDateFormatter *formatter = [[NSDateFormatter alloc] init];
-        [formatter setDateFormat:@"Y-M-D H:mm:s"];
+        [formatter setDateFormat:@"Y-M-d H:mm:s"];
         mapAnnotation.title = [NSString stringWithFormat:@"Time: %@", [formatter stringFromDate:dt.timeStamp]];
 
         [_mapView addAnnotation:mapAnnotation];

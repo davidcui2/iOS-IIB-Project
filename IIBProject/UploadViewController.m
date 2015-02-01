@@ -79,38 +79,7 @@ NSUUID * deviceUUID;
     // Dispose of any resources that can be recreated.
 }
 
-- (IBAction)uploadButtonPressed:(id)sender {
-    
-    Reachability *reachability = [Reachability reachabilityForInternetConnection];
-    [reachability startNotifier];
-    
-    NetworkStatus status = [reachability currentReachabilityStatus];
-    
-    if(status == NotReachable)
-    {
-        [self addToLog:[NSString stringWithFormat:@"Sorry, internet connection"]];
-        return;
-    }
-    else if (status == ReachableViaWiFi)
-    {
-        //WiFi
-    }
-    else if (status == ReachableViaWWAN)
-    {
-        UIAlertView *message = [[UIAlertView alloc] initWithTitle:@"Upload stopped"
-                                                          message:@"Please connect to WiFi first!"
-                                                         delegate:nil
-                                                cancelButtonTitle:@"Back"
-                                                otherButtonTitles:nil];
-        [message show];
-        
-        return;
-    }
-    
-    NSString* fullAddress = [NSString stringWithFormat:@"http://%@/Direct/uploadDataUsage.php", self.ipAddress];
-    
-    IIBPostRequest *newRequest = [[IIBPostRequest alloc]initWithURLString:fullAddress];
-    [newRequest setPostKey:@"UUID" withValue:deviceUUID.UUIDString];
+- (void)httpPostWithXML:(NSString *)postAddress{
     
     // Count all entities
     NSFetchRequest *fetchRequest = [[NSFetchRequest alloc] init];
@@ -133,11 +102,17 @@ NSUUID * deviceUUID;
         return;
     }
     
+    
+    
+    //
+    IIBPostRequest *newRequest = [[IIBPostRequest alloc]initWithURLString:postAddress];
+    [newRequest setPostKey:@"UUID" withValue:deviceUUID.UUIDString];
+    
     // Upload in background
     NSOperationQueue *progressQueue = [[NSOperationQueue alloc] init];
     [progressQueue addOperationWithBlock:^{
         NSDateFormatter *formatter = [[NSDateFormatter alloc] init];
-        [formatter setDateFormat:@"Y-M-D H:mm:s"];
+        [formatter setDateFormat:@"Y-M-d H:mm:s"];
         //        NSLog(@"%@",[formatter stringFromDate:[NSDate date]]);
         
         NSManagedObjectContext *context = [self managedObjectContext];
@@ -188,7 +163,7 @@ NSUUID * deviceUUID;
             NSLog(@"Uploaded No.%d", currentCounter);
             
             // TEST!!!!!!!
-//            if(currentCounter > 100) break;
+            //            if(currentCounter > 100) break;
             
             
             float progressValue = (float)currentCounter/count;
@@ -221,9 +196,155 @@ NSUUID * deviceUUID;
         [context save:&saveError];
         
     }];
+}
+
+- (void)httpPostWithSingleEntry:(NSString *)postAddress {
+    IIBPostRequest *newRequest = [[IIBPostRequest alloc]initWithURLString:postAddress];
+    [newRequest setPostKey:@"UUID" withValue:deviceUUID.UUIDString];
     
+    // Count all entities
+    NSFetchRequest *fetchRequest = [[NSFetchRequest alloc] init];
+    [fetchRequest setEntity:[NSEntityDescription entityForName:@"DataStorage" inManagedObjectContext:self.managedObjectContext]];
+    [fetchRequest setIncludesSubentities:NO]; //Omit subentities. Default is YES (i.e. include subentities)
     
+    NSError *err;
+    NSUInteger count = [self.managedObjectContext countForFetchRequest:fetchRequest error:&err];
+    NSLog(@"Count = %lu",(unsigned long)count);
+    if(count == NSNotFound) {
+        //Handle error
+    }
     
+    if (count > 0) {
+        self.progressBar.hidden = 0;
+    }
+    else {
+        
+        [self addToLog:[NSString stringWithFormat:@"Sorry, no data found in Core Data DB"]];
+        return;
+    }
+    
+    // Upload in background
+    NSOperationQueue *progressQueue = [[NSOperationQueue alloc] init];
+    [progressQueue addOperationWithBlock:^{
+        NSDateFormatter *formatter = [[NSDateFormatter alloc] init];
+        [formatter setDateFormat:@"Y-M-d H:mm:s"];
+        //        NSLog(@"%@",[formatter stringFromDate:[NSDate date]]);
+        
+        NSManagedObjectContext *context = [self managedObjectContext];
+        
+        NSFetchRequest *allData = [[NSFetchRequest alloc] init];
+        [allData setEntity:[NSEntityDescription entityForName:@"DataStorage" inManagedObjectContext:context]];
+        [allData setIncludesPropertyValues:NO]; //only fetch the managedObjectID
+        
+        NSError * error = nil;
+        NSArray * data = [context executeFetchRequest:allData error:&error];
+        //error handling goes here
+        int currentCounter = 0;
+        
+        for (DataStorage * dt in data) {
+
+            [newRequest setPostKey:@"timeStamp" withValue:[formatter stringFromDate:dt.timeStamp]];
+            [newRequest setPostKey:@"wifiSent" withValue:[dt.wifiSent stringValue]];
+            [newRequest setPostKey:@"wifiReceived" withValue:[dt.wifiReceived stringValue]];
+            [newRequest setPostKey:@"wwanSent" withValue:[dt.wwanSent stringValue]];
+            [newRequest setPostKey:@"wwanReceived" withValue:[dt.wwanReceived stringValue]];
+            [newRequest setPostKey:@"gpsLatitude" withValue:[dt.gpsLatitude stringValue]];
+            [newRequest setPostKey:@"gpsLongitude" withValue:[dt.gpsLongitude stringValue]];
+            [newRequest setPostKey:@"estimateSpeed" withValue:[dt.estimateSpeed stringValue]];
+            
+            [newRequest prepareForPost];
+            
+            NSError *error;
+            NSData *returnData = [NSURLConnection sendSynchronousRequest:newRequest returningResponse:nil     error:&error];
+            if (returnData)
+            {
+                NSString *json=[[NSString alloc] initWithData:returnData encoding:NSUTF8StringEncoding];
+                NSLog(@"Resp string: %@",json);
+                
+                if (_deleteLocalSwitch.on) {
+                    [context deleteObject:dt];
+                }
+                
+            }
+            else
+            {
+                dispatch_async(dispatch_get_main_queue(), ^{
+                    [self addToLog:[NSString stringWithFormat:@"Error: %@", error]];
+                });
+                NSLog(@"Error: %@", error);
+                break;
+            }
+            
+            currentCounter++;
+            NSLog(@"Uploaded No.%d", currentCounter);
+            
+            // TEST!!!!!!!
+            //            if(currentCounter > 100) break;
+            
+            
+            float progressValue = (float)currentCounter/count;
+            
+            if (progressValue == 1) {
+                dispatch_async(dispatch_get_main_queue(), ^{
+                    self.progressBar.hidden = 1;
+                    [self addToLog:[NSString stringWithFormat:@"Uploaded %d entries", currentCounter]];
+                    
+                    
+                    if ([CMMotionActivityManager isActivityAvailable]) {
+                        UIAlertView *message = [[UIAlertView alloc] initWithTitle:@"Further Upload"
+                                                                          message:@"Do you want to upload device activity?"
+                                                                         delegate:self
+                                                                cancelButtonTitle:@"Cancel"
+                                                                otherButtonTitles:@"Yes", nil];
+                        [message show];
+                        
+                    }
+                });
+                
+            }
+            else {
+                dispatch_async(dispatch_get_main_queue(), ^{
+                    [self.progressBar setProgress:progressValue];
+                });
+            }
+        }
+        NSError *saveError = nil;
+        [context save:&saveError];
+        
+    }];
+}
+
+- (IBAction)uploadButtonPressed:(id)sender {
+    
+    Reachability *reachability = [Reachability reachabilityForInternetConnection];
+    [reachability startNotifier];
+    
+    NetworkStatus status = [reachability currentReachabilityStatus];
+    
+    if(status == NotReachable)
+    {
+        [self addToLog:[NSString stringWithFormat:@"Sorry, internet connection"]];
+        return;
+    }
+    else if (status == ReachableViaWiFi)
+    {
+        //WiFi
+    }
+    else if (status == ReachableViaWWAN)
+    {
+        UIAlertView *message = [[UIAlertView alloc] initWithTitle:@"Upload stopped"
+                                                          message:@"Please connect to WiFi first!"
+                                                         delegate:nil
+                                                cancelButtonTitle:@"Back"
+                                                otherButtonTitles:nil];
+        [message show];
+        
+        return;
+    }
+    
+    NSString* fullAddress = [NSString stringWithFormat:@"http://%@/Direct/uploadDataUsage.php", self.ipAddress];
+    
+    [self httpPostWithSingleEntry:fullAddress];
     
 }
 

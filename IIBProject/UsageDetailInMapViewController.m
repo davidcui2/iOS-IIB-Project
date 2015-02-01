@@ -56,7 +56,7 @@
         case 0:
             cell.textLabel.text = @"Time";
             formatter = [[NSDateFormatter alloc] init];
-            [formatter setDateFormat:@"Y-M-D H:mm:s"];
+            [formatter setDateFormat:@"Y-M-d H:mm:s"];
             cell.detailTextLabel.text =[formatter stringFromDate:_dataToDisplay.timeStamp];
             break;
         case 3:
