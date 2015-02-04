@@ -339,7 +339,7 @@
                                     <constraint firstAttribute="width" constant="184" id="7NN-bc-EQJ"/>
                                 </constraints>
                                 <fontDescription key="fontDescription" type="system" pointSize="14"/>
-                                <textInputTraits key="textInputTraits" autocorrectionType="no" spellCheckingType="no" keyboardType="decimalPad" returnKeyType="done" enablesReturnKeyAutomatically="YES"/>
+                                <textInputTraits key="textInputTraits" autocorrectionType="no" spellCheckingType="no" keyboardType="URL" returnKeyType="done" enablesReturnKeyAutomatically="YES"/>
                                 <variation key="default">
                                     <mask key="constraints">
                                         <exclude reference="7NN-bc-EQJ"/>
@@ -640,7 +640,7 @@
                                     <constraint firstAttribute="width" constant="144" id="M3U-xq-Oft"/>
                                 </constraints>
                                 <fontDescription key="fontDescription" type="system" pointSize="14"/>
-                                <textInputTraits key="textInputTraits"/>
+                                <textInputTraits key="textInputTraits" keyboardType="emailAddress"/>
                                 <variation key="default">
                                     <mask key="constraints">
                                         <exclude reference="M3U-xq-Oft"/>
@@ -731,27 +731,27 @@
                                 <exclude reference="3O9-sb-oBV"/>
                             </mask>
                             <mask key="constraints">
-                                <exclude reference="7e0-EI-hsS"/>
-                                <exclude reference="nvW-qs-SuB"/>
-                                <exclude reference="Nlv-Kj-mAy"/>
-                                <exclude reference="WiU-IV-WIj"/>
-                                <exclude reference="0EI-Om-wDt"/>
-                                <exclude reference="RV6-ZB-ifh"/>
-                                <exclude reference="fJI-2k-LDX"/>
                                 <exclude reference="oR9-FY-3Id"/>
                                 <exclude reference="tNF-1f-cbq"/>
+                                <exclude reference="92m-bM-8FO"/>
+                                <exclude reference="Kcm-uX-foe"/>
+                                <exclude reference="nL5-GA-Ctt"/>
+                                <exclude reference="nhn-af-Z1T"/>
+                                <exclude reference="7e0-EI-hsS"/>
+                                <exclude reference="nvW-qs-SuB"/>
                                 <exclude reference="2t3-cP-rac"/>
                                 <exclude reference="Fca-Ad-TLD"/>
                                 <exclude reference="Ri4-Pk-3ZY"/>
                                 <exclude reference="AJU-Lg-PmX"/>
                                 <exclude reference="Jll-SJ-ggd"/>
+                                <exclude reference="Nlv-Kj-mAy"/>
+                                <exclude reference="WiU-IV-WIj"/>
+                                <exclude reference="0EI-Om-wDt"/>
+                                <exclude reference="RV6-ZB-ifh"/>
+                                <exclude reference="fJI-2k-LDX"/>
                                 <exclude reference="7kG-TK-phr"/>
                                 <exclude reference="NJ1-MZ-P94"/>
                                 <exclude reference="mGS-gK-8im"/>
-                                <exclude reference="92m-bM-8FO"/>
-                                <exclude reference="Kcm-uX-foe"/>
-                                <exclude reference="nL5-GA-Ctt"/>
-                                <exclude reference="nhn-af-Z1T"/>
                             </mask>
                         </variation>
                         <variation key="heightClass=regular-widthClass=compact">
@@ -766,27 +766,27 @@
                                 <include reference="3O9-sb-oBV"/>
                             </mask>
                             <mask key="constraints">
-                                <include reference="7e0-EI-hsS"/>
-                                <include reference="nvW-qs-SuB"/>
-                                <include reference="Nlv-Kj-mAy"/>
-                                <include reference="WiU-IV-WIj"/>
-                                <include reference="0EI-Om-wDt"/>
-                                <include reference="RV6-ZB-ifh"/>
-                                <include reference="fJI-2k-LDX"/>
                                 <include reference="oR9-FY-3Id"/>
                                 <include reference="tNF-1f-cbq"/>
+                                <include reference="92m-bM-8FO"/>
+                                <include reference="Kcm-uX-foe"/>
+                                <include reference="nL5-GA-Ctt"/>
+                                <include reference="nhn-af-Z1T"/>
+                                <include reference="7e0-EI-hsS"/>
+                                <include reference="nvW-qs-SuB"/>
                                 <include reference="2t3-cP-rac"/>
                                 <include reference="Fca-Ad-TLD"/>
                                 <include reference="Ri4-Pk-3ZY"/>
                                 <include reference="AJU-Lg-PmX"/>
                                 <include reference="Jll-SJ-ggd"/>
+                                <include reference="Nlv-Kj-mAy"/>
+                                <include reference="WiU-IV-WIj"/>
+                                <include reference="0EI-Om-wDt"/>
+                                <include reference="RV6-ZB-ifh"/>
+                                <include reference="fJI-2k-LDX"/>
                                 <include reference="7kG-TK-phr"/>
                                 <include reference="NJ1-MZ-P94"/>
                                 <include reference="mGS-gK-8im"/>
-                                <include reference="92m-bM-8FO"/>
-                                <include reference="Kcm-uX-foe"/>
-                                <include reference="nL5-GA-Ctt"/>
-                                <include reference="nhn-af-Z1T"/>
                             </mask>
                         </variation>
                     </view>
@@ -846,6 +846,6 @@
         </scene>
     </scenes>
     <inferredMetricsTieBreakers>
-        <segue reference="bVU-s2-sEB"/>
+        <segue reference="f4H-KC-iCw"/>
     </inferredMetricsTieBreakers>
 </document>

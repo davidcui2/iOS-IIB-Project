@@ -34,8 +34,7 @@ NSUUID * deviceUUID;
 
 -(void)viewDidAppear:(BOOL)animated{
     // Get the stored data before the view loads
-    NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
-    if ((![defaults objectForKey:@"firstName"])||(![defaults objectForKey:@"lastName"])) {
+    if (![self deviceInfoIsEntered]) {
         UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Sorry"
                                                         message:@"Please provide your personal information first."
                                                        delegate:self
@@ -47,7 +46,6 @@ NSUUID * deviceUUID;
 
 - (void)viewDidLoad {
     [super viewDidLoad];
-    
     
     self.logText.layer.borderWidth = 2.0f;
     self.logText.layer.borderColor = [[UIColor grayColor] CGColor];
@@ -127,11 +125,11 @@ NSUUID * deviceUUID;
         return;
     }
     
-    NSString* fullAddress = [NSString stringWithFormat:@"http://%@/Direct/uploadDataUsage.php", self.ipAddress];
-    [self httpPostWithOneEntryEach:fullAddress];
+//    NSString* fullAddress = [NSString stringWithFormat:@"http://%@/Direct/uploadDataUsage.php", self.ipAddress];
+//    [self httpPostWithOneEntryEach:fullAddress];
     
-//    NSString* fullAddress = [NSString stringWithFormat:@"http://%@/Direct/uploadDataUsageJson.php", self.ipAddress];
-//    [self httpPostWithJson:fullAddress];
+    NSString* fullAddress = [NSString stringWithFormat:@"http://%@/Direct/uploadDataUsageJson.php", self.ipAddress];
+    [self httpPostWithJson:fullAddress];
     
 }
 
@@ -249,6 +247,40 @@ NSUUID * deviceUUID;
     [[NSUserDefaults standardUserDefaults] setBool:_deleteLocalSwitch.on forKey:@"deleteLocalValue"];
 }
 
+- (BOOL) deviceInfoIsEntered
+{
+    NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
+    if ((![defaults objectForKey:@"firstName"])||(![defaults objectForKey:@"lastName"])||
+        (![defaults objectForKey:@"ownerEmail"])||(![defaults objectForKey:@"deviceName"]))
+        return false;
+    else if (([[defaults objectForKey:@"firstName"] length]==0)||([[defaults objectForKey:@"lastName"] length]==0)||
+             ([[defaults objectForKey:@"ownerEmail"] length]==0)||([[defaults objectForKey:@"deviceName"] length]==0))
+        return false;
+
+    return true;
+    
+}
+
+- (void) clearCoreData
+{
+    NSManagedObjectContext *context = [self managedObjectContext];
+    
+    NSFetchRequest *allData = [[NSFetchRequest alloc] init];
+    [allData setEntity:[NSEntityDescription entityForName:@"DataStorage" inManagedObjectContext:context]];
+    [allData setIncludesPropertyValues:NO]; //only fetch the managedObjectID
+    
+    NSError * error = nil;
+    NSArray * data = [context executeFetchRequest:allData error:&error];
+    //error handling goes here
+    for (NSManagedObject * dt in data) {
+        [context deleteObject:dt];
+    }
+    NSError *saveError = nil;
+    [context save:&saveError];
+    //more error handling here
+    NSLog(@"Cleared all data at %@", [NSDate date]);
+}
+
 //#pragma mark - NSURLConnection Delegate Methods
 //
 //- (void)connection:(NSURLConnection *)connection didReceiveResponse:(NSURLResponse *)response
@@ -305,7 +337,7 @@ NSUUID * deviceUUID;
     
     
     
-    NSMutableURLRequest *newRequest = [[NSMutableURLRequest alloc]initWithURL:[NSURL URLWithString:postAddress]];
+    NSMutableURLRequest *newRequest = [[NSMutableURLRequest alloc]initWithURL:[NSURL URLWithString:postAddress]cachePolicy:NSURLRequestUseProtocolCachePolicy timeoutInterval:30];
     
     // Upload in background
     NSOperationQueue *progressQueue = [[NSOperationQueue alloc] init];
@@ -324,7 +356,8 @@ NSUUID * deviceUUID;
                                    [defaults objectForKey:@"firstName"],
                                    [defaults objectForKey:@"lastName"],
                                    [defaults objectForKey:@"ownerEmail"],
-                                   [defaults objectForKey:@"deviceName"], nil];
+                                   [defaults objectForKey:@"deviceName"]//[[defaults objectForKey:@"deviceName"] stringByReplacingOccurrencesOfString:@"\'" withString:@"\\\'"]
+                                   , nil];
         
         NSArray *dataTypeKey = [NSArray arrayWithObjects:@"timeStamp",@"wifiSent",@"wifiReceived",@"wwanSent",
                                 @"wwanReceived",@"gpsLatitude",@"gpsLongitude",@"estimateSpeed", nil];
@@ -363,17 +396,13 @@ NSUUID * deviceUUID;
                                    [dt.estimateSpeed stringValue], nil]];
             
             currentCounter++;
-            NSLog(@"JSON added No.%d", currentCounter);
-            if (_deleteLocalSwitch.on) {
-                [context deleteObject:dt];
-            }
-            
+            if (currentCounter%100 == 0) NSLog(@"JSON added No.%d", currentCounter);
             
             float progressValue = (float)currentCounter/count;
             
             if (progressValue == 1) {
                 NSDictionary *jsonDictionary = [NSDictionary dictionaryWithObjects:[NSArray arrayWithObjects:deviceInfoKey,deviceInfoData,dataTypeKey,actualData, nil]
-                                                                           forKeys:[NSArray arrayWithObjects:@"deviceInfoKey",@"deviceInfoData",@"dataTypeKey",@"dataTypeValue", nil]];
+                                                                           forKeys:[NSArray arrayWithObjects:@"deviceInfoKey",@"deviceInfoData",@"dataTypeKey",@"dataTypeValue", nil]];
                 if ([NSJSONSerialization isValidJSONObject:jsonDictionary]){
                     NSLog(@"Can be converted to JSON");
                     NSData *jsonData = [NSJSONSerialization dataWithJSONObject:jsonDictionary options:0 error:&error];
@@ -388,10 +417,9 @@ NSUUID * deviceUUID;
                     {
                         NSString *json=[[NSString alloc] initWithData:returnData encoding:NSUTF8StringEncoding];
                         NSLog(@"Resp string: %@",json);
-            
-                        if ([json hasSuffix:@"All success."]) {
-                            NSError *saveError = nil;
-                            [context save:&saveError];
+                        
+                        if ((_deleteLocalSwitch.on)&&([json hasSuffix:@"All success."])) {
+                            [self clearCoreData];
                         }
                     }
                     else
@@ -408,16 +436,6 @@ NSUUID * deviceUUID;
                 else{
                     NSLog(@"Cannot be converted to JSON");
                 }
-                //                for (NSString* key in _postDictionary) {
-                //                    _postContent = [_postContent stringByAppendingString:[NSString stringWithFormat:@"%@=%@&",key,[_postDictionary objectForKey:key]]];
-                //                }
-                //                NSData *postData = [_postContent dataUsingEncoding:NSASCIIStringEncoding allowLossyConversion:YES];
-                //                NSString *postLength = [NSString stringWithFormat:@"%lu", (unsigned long)[postData length]];
-                //                [self setHTTPMethod:@"POST"];
-                //                [self setValue:postLength forHTTPHeaderField:@"Content-Length"];
-                //                [self setValue:@"application/x-www-form-urlencoded" forHTTPHeaderField:@"Content-Type"];
-                //                [self setHTTPBody:postData];
-                
                 
                 dispatch_async(dispatch_get_main_queue(), ^{
                     self.progressBar.hidden = 1;
@@ -613,6 +631,129 @@ NSUUID * deviceUUID;
             //            }
             
             NSString* fullAddress = [NSString stringWithFormat:@"http://%@/Direct/uploadActivity.php", self.ipAddress];
+            
+            IIBPostRequest *newRequest = [[IIBPostRequest alloc]initWithURLString:fullAddress];
+            [newRequest setPostKey:@"UUID" withValue:deviceUUID.UUIDString];
+            
+            // Upload in background
+            NSOperationQueue *progressQueue = [[NSOperationQueue alloc] init];
+            [progressQueue addOperationWithBlock:^{
+                NSDateFormatter *formatter = [[NSDateFormatter alloc] init];
+                [formatter setDateFormat:@"Y-M-D H:mm:s"];
+                //        NSLog(@"%@",[formatter stringFromDate:[NSDate date]]);
+                
+                NSManagedObjectContext *context = [self managedObjectContext];
+                
+                NSFetchRequest *allData = [[NSFetchRequest alloc] init];
+                [allData setEntity:[NSEntityDescription entityForName:@"MotionActivityRecord" inManagedObjectContext:context]];
+                [allData setIncludesPropertyValues:NO]; //only fetch the managedObjectID
+                
+                int currentCounter = 0;
+                
+                BOOL uploadOK = 1;
+                
+                for (CMMotionActivity *activity in activities) {
+                    if ((activity.confidence == CMMotionActivityConfidenceHigh)||(activity.confidence == CMMotionActivityConfidenceMedium)) {
+                        // Extract a function return all possible activity
+                        NSString *activityName;
+                        if (activity.automotive) activityName = @"automotive";
+                        else if (activity.cycling) activityName = @"cycling";
+                        else if (activity.running) activityName = @"running";
+                        else if (activity.walking) activityName = @"walking";
+                        else if (activity.stationary) activityName = @"stationary";
+                        else activityName = @"unknown";
+                        
+                        NSString *confidence;
+                        
+                        if (activity.confidence == CMMotionActivityConfidenceHigh) confidence = @"High";
+                        else confidence = @"Medium";
+                        
+                        [newRequest setPostKey:@"startTime" withValue:[formatter stringFromDate:activity.startDate]];
+                        [newRequest setPostKey:@"activityName" withValue:activityName];
+                        [newRequest setPostKey:@"confidenceLevel" withValue:confidence];
+                        
+                        [newRequest prepareForPost];
+                        
+                        NSError *error;
+                        NSData *returnData = [NSURLConnection sendSynchronousRequest:newRequest returningResponse:nil     error:&error];
+                        if (returnData)
+                        {
+                            //                            NSString *json=[[NSString alloc] initWithData:returnData encoding:NSUTF8StringEncoding];
+                            //                            NSLog(@"Resp string: %@",json);
+                        }
+                        else
+                        {
+                            dispatch_async(dispatch_get_main_queue(), ^{
+                                [self addToLog:[NSString stringWithFormat:@"Error: %@", error]];
+                            });
+                            NSLog(@"Error: %@", error);
+                            uploadOK = 0;
+                            break;
+                        }
+                        
+                        currentCounter++;
+                    }
+                    
+                    
+                    
+                }
+                
+                if (uploadOK) {
+                    [self updateLastUpdateDate:[NSDate date]];
+                }
+                
+                dispatch_async(dispatch_get_main_queue(), ^{
+                    [self addToLog:[NSString stringWithFormat:@"Uploaded %d high confidence motion activities.", currentCounter]];
+                    [activityView stopAnimating];
+                });
+                
+            }];
+        }
+    }];
+}
+
+- (void)uploadMotionActivityJson
+{
+    NSDate *lastUpdateTime = [self getLastUpdateTime];
+    
+    
+    UIActivityIndicatorView *activityView=[[UIActivityIndicatorView alloc]     initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleGray];
+    activityView.center=self.view.center;
+    [activityView startAnimating];
+    [self.view addSubview:activityView];
+    
+    [_motionActivitiyManager queryActivityStartingFromDate:lastUpdateTime toDate:[NSDate date] toQueue:[NSOperationQueue mainQueue] withHandler:^(NSArray *activities, NSError *error) {
+        if (error) {
+            UIAlertView *alert = [[UIAlertView alloc] initWithTitle:NSLocalizedString(@"Error", nil)
+                                                            message:[error description]
+                                                           delegate:nil
+                                                  cancelButtonTitle:NSLocalizedString(@"OK", nil)
+                                                  otherButtonTitles:nil, nil];
+            [alert show];
+            return ;
+        }
+        if (error != nil && error.code == CMErrorMotionActivityNotAuthorized) {
+            
+            dispatch_async(dispatch_get_main_queue(), ^{
+                [self addToLog:@"The app isn't authorized to use motion activity support."];
+                [activityView stopAnimating];
+            });
+        }
+        else{
+            //            for (CMMotionActivity *activity in activities) {
+            //                // Only need High confidence activity
+            //                if (activity.confidence == CMMotionActivityConfidenceHigh) {
+            //                    // Extract a function return all possible activity
+            //                    if (activity.automotive) NSLog(@"Automotive: %d, Start date: %@", activity.automotive, activity.startDate);
+            //                    if (activity.cycling) NSLog(@"Cycling: %d, Start date: %@", activity.cycling, activity.startDate);
+            //                    if (activity.running) NSLog(@"Running: %d, Start date: %@", activity.running, activity.startDate);
+            //                    if (activity.walking) NSLog(@"Walking: %d, Start date: %@", activity.walking, activity.startDate);
+            //                    if (activity.stationary) NSLog(@"Stationary: %d, Start Date: %@", activity.stationary, activity.startDate);
+            //                }
+            //
+            //            }
+            
+            NSString* fullAddress = [NSString stringWithFormat:@"http://%@/Direct/uploadActivityJson.php", self.ipAddress];
             
             IIBPostRequest *newRequest = [[IIBPostRequest alloc]initWithURLString:fullAddress];
             [newRequest setPostKey:@"UUID" withValue:deviceUUID.UUIDString];
