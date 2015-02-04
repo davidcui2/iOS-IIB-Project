@@ -25,7 +25,7 @@
 //
 //    UIBarButtonItem *addButton = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemAdd target:self action:@selector(insertNewObject:)];
 //    self.navigationItem.rightBarButtonItem = addButton;
-    UIBarButtonItem *clearButton = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemTrash target:self action:@selector(clearCoreData)];
+    UIBarButtonItem *clearButton = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemTrash target:self action:@selector(askForClearCoreData)];
     self.navigationItem.rightBarButtonItem = clearButton;
     
     // Initialize the refresh control.
@@ -115,6 +115,10 @@
         MapMasterTableViewController *vc = [segue destinationViewController];
         [vc setManagedObjectContext:_managedObjectContext];
     }
+    else if ([[segue identifier] isEqualToString:@"showPersonalDetailFromMaster"]) {
+        MapMasterTableViewController *vc = [segue destinationViewController];
+        vc.title = @"My Detail";
+    }
     
 }
 //
@@ -188,6 +192,28 @@
 - (void)configureCell:(UITableViewCell *)cell atIndexPath:(NSIndexPath *)indexPath {
     NSManagedObject *object = [self.fetchedResultsController objectAtIndexPath:indexPath];
     cell.textLabel.text = [[object valueForKey:@"timeStamp"] description];
+}
+
+#pragma mark - Core Data
+
+- (void) askForClearCoreData
+{
+    UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Warning"
+                                                    message:@"You are about to delete all recorded data on this device. This cannot be recovered!"
+                                                   delegate:self
+                                          cancelButtonTitle:@"Cancel"
+                                          otherButtonTitles:@"Delete!",nil];
+    [alert show];
+}
+
+- (void)alertView:(UIAlertView *)alertView clickedButtonAtIndex:(NSInteger)buttonIndex
+{
+    NSString *title = [alertView buttonTitleAtIndex:buttonIndex];
+    
+    if ([title isEqualToString:@"Continue"]) {
+        [self clearCoreData];
+    }
+    
 }
 
 - (void) clearCoreData

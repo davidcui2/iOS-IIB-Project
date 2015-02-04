@@ -106,11 +106,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "IIBProject/UploadViewController.m"
-            timestampString = "444501295.882238"
+            timestampString = "444700958.96546"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "422"
-            endingLineNumber = "422"
+            startingLineNumber = "616"
+            endingLineNumber = "616"
             landmarkName = "-uploadMotionActivity"
             landmarkType = "5">
          </BreakpointContent>
@@ -122,12 +122,12 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "IIBProject/UploadViewController.m"
-            timestampString = "444501295.882238"
+            timestampString = "444700958.96546"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "508"
-            endingLineNumber = "508"
-            landmarkName = "-uploadMotionActivity"
+            startingLineNumber = "702"
+            endingLineNumber = "702"
+            landmarkName = "-prepareForSegue:sender:"
             landmarkType = "5">
          </BreakpointContent>
       </BreakpointProxy>
@@ -138,58 +138,12 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "IIBProject/UploadViewController.m"
-            timestampString = "444501295.882238"
+            timestampString = "444700958.96546"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "415"
-            endingLineNumber = "415"
-            landmarkName = "-uploadMotionActivity"
-            landmarkType = "5">
-            <Locations>
-               <Location
-                  shouldBeEnabled = "No"
-                  ignoreCount = "0"
-                  continueAfterRunningActions = "No"
-                  symbolName = "-[UploadViewController uploadMotionActivity]"
-                  moduleName = "IIBProject"
-                  urlString = "file:///Users/DavidCui/Google%20Drive/Part%202B/Project/iOS/IIBProject/UploadViewController.m"
-                  timestampString = "443493495.708063"
-                  startingColumnNumber = "9223372036854775807"
-                  endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "237"
-                  endingLineNumber = "237"
-                  offsetFromSymbolStart = "392">
-               </Location>
-               <Location
-                  shouldBeEnabled = "No"
-                  ignoreCount = "0"
-                  continueAfterRunningActions = "No"
-                  symbolName = "__44-[UploadViewController uploadMotionActivity]_block_invoke"
-                  moduleName = "IIBProject"
-                  urlString = "file:///Users/DavidCui/Google%20Drive/Part%202B/Project/iOS/IIBProject/UploadViewController.m"
-                  timestampString = "443493495.708228"
-                  startingColumnNumber = "9223372036854775807"
-                  endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "237"
-                  endingLineNumber = "237"
-                  offsetFromSymbolStart = "76">
-               </Location>
-            </Locations>
-         </BreakpointContent>
-      </BreakpointProxy>
-      <BreakpointProxy
-         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
-         <BreakpointContent
-            shouldBeEnabled = "No"
-            ignoreCount = "0"
-            continueAfterRunningActions = "No"
-            filePath = "IIBProject/UploadViewController.m"
-            timestampString = "444501295.882238"
-            startingColumnNumber = "9223372036854775807"
-            endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "511"
-            endingLineNumber = "511"
-            landmarkName = "-uploadMotionActivity"
+            startingLineNumber = "705"
+            endingLineNumber = "705"
+            landmarkName = "-prepareForSegue:sender:"
             landmarkType = "5">
          </BreakpointContent>
       </BreakpointProxy>
@@ -200,13 +154,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "IIBProject/UploadViewController.m"
-            timestampString = "444501295.882238"
+            timestampString = "444700958.96546"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "524"
-            endingLineNumber = "524"
-            landmarkName = "-uploadMotionActivity"
-            landmarkType = "5">
+            startingLineNumber = "718"
+            endingLineNumber = "718">
             <Locations>
                <Location
                   shouldBeEnabled = "No"
@@ -246,11 +198,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "IIBProject/UploadViewController.m"
-            timestampString = "444322768.725663"
+            timestampString = "444522359.130253"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "74"
-            endingLineNumber = "74"
+            startingLineNumber = "92"
+            endingLineNumber = "92"
             landmarkName = "-viewDidLoad"
             landmarkType = "5">
          </BreakpointContent>
@@ -262,13 +214,13 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "IIBProject/UploadViewController.m"
-            timestampString = "444501295.882238"
+            timestampString = "444700958.96546"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "516"
-            endingLineNumber = "516"
-            landmarkName = "-uploadMotionActivity"
-            landmarkType = "5">
+            startingLineNumber = "710"
+            endingLineNumber = "710"
+            landmarkName = "@implementation UploadViewController"
+            landmarkType = "3">
          </BreakpointContent>
       </BreakpointProxy>
       <BreakpointProxy
@@ -278,29 +230,13 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "IIBProject/UploadViewController.m"
-            timestampString = "444501295.882238"
+            timestampString = "444700958.96546"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "409"
-            endingLineNumber = "409"
-            landmarkName = "-uploadMotionActivity"
-            landmarkType = "5">
-         </BreakpointContent>
-      </BreakpointProxy>
-      <BreakpointProxy
-         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
-         <BreakpointContent
-            shouldBeEnabled = "No"
-            ignoreCount = "0"
-            continueAfterRunningActions = "No"
-            filePath = "IIBProject/UploadViewController.m"
-            timestampString = "444501295.882238"
-            startingColumnNumber = "9223372036854775807"
-            endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "517"
-            endingLineNumber = "517"
-            landmarkName = "-uploadMotionActivity"
-            landmarkType = "5">
+            startingLineNumber = "711"
+            endingLineNumber = "711"
+            landmarkName = "@implementation UploadViewController"
+            landmarkType = "3">
             <Locations>
                <Location
                   shouldBeEnabled = "No"
@@ -340,13 +276,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "IIBProject/UploadViewController.m"
-            timestampString = "444501295.882238"
+            timestampString = "444700958.96546"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "567"
-            endingLineNumber = "567"
-            landmarkName = "-updateLastUpdateDate:"
-            landmarkType = "5">
+            startingLineNumber = "761"
+            endingLineNumber = "761">
          </BreakpointContent>
       </BreakpointProxy>
       <BreakpointProxy
@@ -356,77 +290,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "IIBProject/UploadViewController.m"
-            timestampString = "444501295.882238"
+            timestampString = "444700958.96546"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "395"
-            endingLineNumber = "395"
-            landmarkName = "-getLastUpdateTime"
-            landmarkType = "5">
-         </BreakpointContent>
-      </BreakpointProxy>
-      <BreakpointProxy
-         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
-         <BreakpointContent
-            shouldBeEnabled = "No"
-            ignoreCount = "0"
-            continueAfterRunningActions = "No"
-            filePath = "IIBProject/UploadViewController.m"
-            timestampString = "444501295.882238"
-            startingColumnNumber = "9223372036854775807"
-            endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "394"
-            endingLineNumber = "394"
-            landmarkName = "-getLastUpdateTime"
-            landmarkType = "5">
-         </BreakpointContent>
-      </BreakpointProxy>
-      <BreakpointProxy
-         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
-         <BreakpointContent
-            shouldBeEnabled = "No"
-            ignoreCount = "0"
-            continueAfterRunningActions = "No"
-            filePath = "IIBProject/UploadViewController.m"
-            timestampString = "444501295.882238"
-            startingColumnNumber = "9223372036854775807"
-            endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "391"
-            endingLineNumber = "391"
-            landmarkName = "-getLastUpdateTime"
-            landmarkType = "5">
-         </BreakpointContent>
-      </BreakpointProxy>
-      <BreakpointProxy
-         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
-         <BreakpointContent
-            shouldBeEnabled = "No"
-            ignoreCount = "0"
-            continueAfterRunningActions = "No"
-            filePath = "IIBProject/UploadViewController.m"
-            timestampString = "444501295.882238"
-            startingColumnNumber = "9223372036854775807"
-            endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "545"
-            endingLineNumber = "545"
-            landmarkName = "-updateLastUpdateDate:"
-            landmarkType = "5">
-         </BreakpointContent>
-      </BreakpointProxy>
-      <BreakpointProxy
-         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
-         <BreakpointContent
-            shouldBeEnabled = "No"
-            ignoreCount = "0"
-            continueAfterRunningActions = "No"
-            filePath = "IIBProject/UploadViewController.m"
-            timestampString = "444501295.882238"
-            startingColumnNumber = "9223372036854775807"
-            endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "403"
-            endingLineNumber = "403"
-            landmarkName = "-getLastUpdateTime"
-            landmarkType = "5">
+            startingLineNumber = "739"
+            endingLineNumber = "739">
          </BreakpointContent>
       </BreakpointProxy>
       <BreakpointProxy
@@ -628,12 +496,74 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "IIBProject/UploadViewController.m"
-            timestampString = "444501295.882238"
+            timestampString = "444700958.96546"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "582"
-            endingLineNumber = "582"
-            landmarkName = "-deleteLocalSwitchValueChanged:"
+            startingLineNumber = "779"
+            endingLineNumber = "779">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "IIBProject/UploadViewController.m"
+            timestampString = "444522359.130253"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "58"
+            endingLineNumber = "58"
+            landmarkName = "-viewDidLoad"
+            landmarkType = "5">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "IIBProject/PersonalDetailViewController.m"
+            timestampString = "444522481.270717"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "22"
+            endingLineNumber = "22"
+            landmarkName = "-viewDidLoad"
+            landmarkType = "5">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "IIBProject/PersonalDetailViewController.m"
+            timestampString = "444522538.876691"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "28"
+            endingLineNumber = "28"
+            landmarkName = "-viewDidLoad"
+            landmarkType = "5">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            shouldBeEnabled = "Yes"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "IIBProject/UploadViewController.m"
+            timestampString = "444700958.96546"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "377"
+            endingLineNumber = "377"
+            landmarkName = "-httpPostWithJson:"
             landmarkType = "5">
          </BreakpointContent>
       </BreakpointProxy>
@@ -644,12 +574,12 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "IIBProject/UploadViewController.m"
-            timestampString = "444322835.444406"
+            timestampString = "444701006.047752"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "42"
-            endingLineNumber = "42"
-            landmarkName = "-viewDidLoad"
+            startingLineNumber = "453"
+            endingLineNumber = "453"
+            landmarkName = "-httpPostWithOneEntryEach:"
             landmarkType = "5">
          </BreakpointContent>
       </BreakpointProxy>

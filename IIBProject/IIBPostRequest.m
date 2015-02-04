@@ -17,7 +17,7 @@
 {
     _postDictionary = [[NSMutableDictionary alloc]init];
     _postContent = [[NSString alloc]init];
-    return [super initWithURL:[NSURL URLWithString:urlString]];
+    return [super initWithURL:[NSURL URLWithString:urlString] cachePolicy:NSURLRequestUseProtocolCachePolicy timeoutInterval:4000];
 }
 
 - (void)setPostKey:(NSString *)postKey withValue:(NSString *)postValue

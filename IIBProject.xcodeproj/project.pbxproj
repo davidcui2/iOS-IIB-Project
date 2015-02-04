@@ -21,6 +21,7 @@
 		2277A66D1A672A5900396BE8 /* IIBProjectTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 2277A66C1A672A5900396BE8 /* IIBProjectTests.m */; };
 		2277A6781A672A9B00396BE8 /* DataUsageTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 2277A6771A672A9B00396BE8 /* DataUsageTableViewController.m */; };
 		228EF2D21A6819B400B7A14C /* UploadViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 228EF2D11A6819B400B7A14C /* UploadViewController.m */; };
+		22A6AE8A1A7ED8D4009DF002 /* PersonalDetailViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 22A6AE891A7ED8D4009DF002 /* PersonalDetailViewController.m */; };
 		22D547511A700759006D806C /* Reachability.m in Sources */ = {isa = PBXBuildFile; fileRef = 22D547501A700759006D806C /* Reachability.m */; };
 		22D91F8F1A6917B8001DC248 /* CoreLocation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 22D91F8E1A6917B8001DC248 /* CoreLocation.framework */; };
 		22FF970F1A77AB6200ED3CED /* GpsOnMapViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 22FF970E1A77AB6200ED3CED /* GpsOnMapViewController.m */; };
@@ -67,6 +68,8 @@
 		2277A6771A672A9B00396BE8 /* DataUsageTableViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DataUsageTableViewController.m; sourceTree = "<group>"; };
 		228EF2D01A6819B400B7A14C /* UploadViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UploadViewController.h; sourceTree = "<group>"; };
 		228EF2D11A6819B400B7A14C /* UploadViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = UploadViewController.m; sourceTree = "<group>"; };
+		22A6AE881A7ED8D4009DF002 /* PersonalDetailViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PersonalDetailViewController.h; sourceTree = "<group>"; };
+		22A6AE891A7ED8D4009DF002 /* PersonalDetailViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PersonalDetailViewController.m; sourceTree = "<group>"; };
 		22D5474F1A700759006D806C /* Reachability.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Reachability.h; sourceTree = "<group>"; };
 		22D547501A700759006D806C /* Reachability.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Reachability.m; sourceTree = "<group>"; };
 		22D91F8E1A6917B8001DC248 /* CoreLocation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreLocation.framework; path = System/Library/Frameworks/CoreLocation.framework; sourceTree = SDKROOT; };
@@ -136,8 +139,7 @@
 				2277A6551A672A5800396BE8 /* MasterViewController.m */,
 				2277A6761A672A9B00396BE8 /* DataUsageTableViewController.h */,
 				2277A6771A672A9B00396BE8 /* DataUsageTableViewController.m */,
-				228EF2D01A6819B400B7A14C /* UploadViewController.h */,
-				228EF2D11A6819B400B7A14C /* UploadViewController.m */,
+				22A6AE871A7ED8BC009DF002 /* Upload */,
 				22FF97151A77B0A700ED3CED /* Map */,
 				22FF97161A77B0B100ED3CED /* Classes */,
 				2277A65A1A672A5800396BE8 /* Main.storyboard */,
@@ -174,6 +176,17 @@
 				2277A66B1A672A5900396BE8 /* Info.plist */,
 			);
 			name = "Supporting Files";
+			sourceTree = "<group>";
+		};
+		22A6AE871A7ED8BC009DF002 /* Upload */ = {
+			isa = PBXGroup;
+			children = (
+				228EF2D01A6819B400B7A14C /* UploadViewController.h */,
+				228EF2D11A6819B400B7A14C /* UploadViewController.m */,
+				22A6AE881A7ED8D4009DF002 /* PersonalDetailViewController.h */,
+				22A6AE891A7ED8D4009DF002 /* PersonalDetailViewController.m */,
+			);
+			name = Upload;
 			sourceTree = "<group>";
 		};
 		22FF97151A77B0A700ED3CED /* Map */ = {
@@ -262,12 +275,16 @@
 				TargetAttributes = {
 					2277A6461A672A5800396BE8 = {
 						CreatedOnToolsVersion = 6.1.1;
+						DevelopmentTeam = 5QB7973RVT;
 						SystemCapabilities = {
 							com.apple.BackgroundModes = {
 								enabled = 1;
 							};
 							com.apple.Maps.iOS = {
 								enabled = 1;
+							};
+							com.apple.iCloud = {
+								enabled = 0;
 							};
 						};
 					};
@@ -336,6 +353,7 @@
 				22FF97121A77ABE700ED3CED /* MapMasterTableViewController.m in Sources */,
 				2277A6781A672A9B00396BE8 /* DataUsageTableViewController.m in Sources */,
 				22776A451A759253001AAF51 /* IIBPostRequest.m in Sources */,
+				22A6AE8A1A7ED8D4009DF002 /* PersonalDetailViewController.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -394,7 +412,8 @@
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				CODE_SIGN_IDENTITY = "iPhone Distribution: Zhihao Cui";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Distribution: Zhihao Cui";
 				COPY_PHASE_STRIP = NO;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu99;
@@ -414,6 +433,7 @@
 				IPHONEOS_DEPLOYMENT_TARGET = 8.1;
 				MTL_ENABLE_DEBUG_INFO = YES;
 				ONLY_ACTIVE_ARCH = YES;
+				PROVISIONING_PROFILE = "2798b097-a724-4b24-8e1f-00102b1c9285";
 				SDKROOT = iphoneos;
 			};
 			name = Debug;
@@ -435,7 +455,8 @@
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				CODE_SIGN_IDENTITY = "iPhone Distribution: Zhihao Cui";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Distribution: Zhihao Cui";
 				COPY_PHASE_STRIP = YES;
 				ENABLE_NS_ASSERTIONS = NO;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
@@ -448,6 +469,7 @@
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 8.1;
 				MTL_ENABLE_DEBUG_INFO = NO;
+				PROVISIONING_PROFILE = "2798b097-a724-4b24-8e1f-00102b1c9285";
 				SDKROOT = iphoneos;
 				VALIDATE_PRODUCT = YES;
 			};
@@ -457,10 +479,13 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				INFOPLIST_FILE = IIBProject/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				PROVISIONING_PROFILE = "3f5e8a8c-c1df-42f5-8e3b-a9485e7f42b6";
+				PROVISIONING_PROFILE = "";
 			};
 			name = Debug;
 		};
@@ -468,10 +493,13 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				INFOPLIST_FILE = IIBProject/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				PROVISIONING_PROFILE = "3f5e8a8c-c1df-42f5-8e3b-a9485e7f42b6";
+				PROVISIONING_PROFILE = "";
 			};
 			name = Release;
 		};
