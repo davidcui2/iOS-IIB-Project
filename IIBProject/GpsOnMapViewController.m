@@ -124,7 +124,7 @@
                 pinView = [[MapAnnotationView alloc] initWithAnnotation:annotation
                                                           reuseIdentifier:@"CustomPinAnnotationView"];
                 pinView.pinColor = MKPinAnnotationColorRed;
-                pinView.animatesDrop = YES;
+                pinView.animatesDrop = NO;
                 pinView.canShowCallout = YES;
                 
                 // If appropriate, customize the callout by adding accessory views (code not shown).

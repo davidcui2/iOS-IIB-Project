@@ -80,7 +80,7 @@ NSUUID * deviceUUID;
     NSError *err;
     NSUInteger count = [self.managedObjectContext countForFetchRequest:fetchRequest error:&err];
     [self addToLog:[NSString stringWithFormat:@"DataStorage Total Count = %lu",(unsigned long)count]];
-    NSLog(@"Count = %lu",(unsigned long)count);
+//    NSLog(@"Count = %lu",(unsigned long)count);
     if(count == NSNotFound) {
         //Handle error
     }
@@ -203,7 +203,7 @@ NSUUID * deviceUUID;
     
     NSError *err;
     NSUInteger count = [self.managedObjectContext countForFetchRequest:fetchRequest error:&err];
-    NSLog(@"MotionActivityRecord Count = %lu",(unsigned long)count);
+//    NSLog(@"MotionActivityRecord Count = %lu",(unsigned long)count);
     if(count == NSNotFound) {
         //Handle error
     }
@@ -236,7 +236,7 @@ NSUUID * deviceUUID;
     NSString *title = [alertView buttonTitleAtIndex:buttonIndex];
     
     if ([title isEqualToString:@"Yes"]) {
-        [self uploadMotionActivity];
+        [self uploadMotionActivityJson];
     }
     else if ([title isEqualToString:@"Sure"]) { // Go to personal detail page
         [self performSegueWithIdentifier:@"showPersonalDetail" sender:self];
@@ -281,6 +281,13 @@ NSUUID * deviceUUID;
     NSLog(@"Cleared all data at %@", [NSDate date]);
 }
 
+- (BOOL) textFieldShouldReturn:(UITextField *)textField
+{
+    [self setIP:nil];
+    return YES;
+}
+
+
 //#pragma mark - NSURLConnection Delegate Methods
 //
 //- (void)connection:(NSURLConnection *)connection didReceiveResponse:(NSURLResponse *)response
@@ -313,10 +320,23 @@ NSUUID * deviceUUID;
 #pragma mark - HTTP Post
 
 - (void)httpPostWithJson:(NSString *)postAddress {
+    NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
+    NSDate *startDate;
+    if(![defaults objectForKey:@"lastDataUsageUploadTimestamp"])
+    {
+        startDate = [[NSDate alloc]initWithTimeIntervalSince1970:0];
+    }
+    else
+    {
+        startDate = [defaults objectForKey:@"lastDataUsageUploadTimestamp"];
+    }
+    
+    NSPredicate *predicate = [NSPredicate predicateWithFormat:@"timeStamp > %@", startDate];
     // Count all entities
     NSFetchRequest *fetchRequest = [[NSFetchRequest alloc] init];
     [fetchRequest setEntity:[NSEntityDescription entityForName:@"DataStorage" inManagedObjectContext:self.managedObjectContext]];
     [fetchRequest setIncludesSubentities:NO]; //Omit subentities. Default is YES (i.e. include subentities)
+    [fetchRequest setPredicate:predicate];
     
     NSError *err;
     NSUInteger count = [self.managedObjectContext countForFetchRequest:fetchRequest error:&err];
@@ -330,24 +350,27 @@ NSUUID * deviceUUID;
     }
     else {
         
-        [self addToLog:[NSString stringWithFormat:@"Sorry, no data found in Core Data DB"]];
+        [self addToLog:[NSString stringWithFormat:@"Sorry, no new data found in Core Data DB"]];
+        if ([CMMotionActivityManager isActivityAvailable]) {
+            UIAlertView *message = [[UIAlertView alloc] initWithTitle:@"Further Upload"
+                                                              message:@"Do you want to upload device activity?"
+                                                             delegate:self
+                                                    cancelButtonTitle:@"Cancel"
+                                                    otherButtonTitles:@"Yes", nil];
+            [message show];
+            
+        }
         return;
     }
-    
-    
-    
-    
+
     NSMutableURLRequest *newRequest = [[NSMutableURLRequest alloc]initWithURL:[NSURL URLWithString:postAddress]cachePolicy:NSURLRequestUseProtocolCachePolicy timeoutInterval:30];
     
     // Upload in background
     NSOperationQueue *progressQueue = [[NSOperationQueue alloc] init];
     [progressQueue addOperationWithBlock:^{
-        
-        
         // Json: {dict:@"deviceInfoKey"{UUID,firstName,lastName,email},@"deviceInfoData"{xx-xx-xx,name,name,name@email.com}
         //              @"dataTypeKey"{time,wifi....},@"actualData"{dataArray1,dataArray2..}}
         
-        NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
         
         
         NSArray *deviceInfoKey = [NSArray arrayWithObjects:@"UUID",@"firstName",@"lastName",@"email", @"deviceName", nil];
@@ -372,6 +395,7 @@ NSUUID * deviceUUID;
         NSFetchRequest *allData = [[NSFetchRequest alloc] init];
         [allData setEntity:[NSEntityDescription entityForName:@"DataStorage" inManagedObjectContext:context]];
         [allData setIncludesPropertyValues:NO]; //only fetch the managedObjectID
+        [allData setPredicate:predicate];
         
         NSError * error = nil;
         NSArray * data = [context executeFetchRequest:allData error:&error];
@@ -384,6 +408,8 @@ NSUUID * deviceUUID;
         //error handling goes here
         int currentCounter = 0;
         
+        NSDate *latestTimeStamp = [[NSDate alloc]initWithTimeIntervalSince1970:0];
+        
         for (DataStorage * dt in data) {
             [actualData addObject:[NSArray arrayWithObjects:
                                    [formatter stringFromDate:dt.timeStamp],
@@ -395,6 +421,7 @@ NSUUID * deviceUUID;
                                    [dt.gpsLongitude stringValue],
                                    [dt.estimateSpeed stringValue], nil]];
             
+            latestTimeStamp = [latestTimeStamp laterDate:dt.timeStamp];
             currentCounter++;
             if (currentCounter%100 == 0) NSLog(@"JSON added No.%d", currentCounter);
             
@@ -418,9 +445,30 @@ NSUUID * deviceUUID;
                         NSString *json=[[NSString alloc] initWithData:returnData encoding:NSUTF8StringEncoding];
                         NSLog(@"Resp string: %@",json);
                         
-                        if ((_deleteLocalSwitch.on)&&([json hasSuffix:@"All success."])) {
-                            [self clearCoreData];
+                        if ([json hasSuffix:@"All success."]) {
+                            [defaults setObject:latestTimeStamp forKey:@"lastDataUsageUploadTimestamp"];
+
+                            if (_deleteLocalSwitch.on) {
+                                [self clearCoreData];
+                            }
                         }
+                        
+                        
+                        dispatch_async(dispatch_get_main_queue(), ^{
+                            self.progressBar.hidden = 1;
+                            [self addToLog:[NSString stringWithFormat:@"Uploaded %d entries", currentCounter]];
+                            
+                            
+                            if ([CMMotionActivityManager isActivityAvailable]) {
+                                UIAlertView *message = [[UIAlertView alloc] initWithTitle:@"Further Upload"
+                                                                                  message:@"Do you want to upload device activity?"
+                                                                                 delegate:self
+                                                                        cancelButtonTitle:@"Cancel"
+                                                                        otherButtonTitles:@"Yes", nil];
+                                [message show];
+                                
+                            }
+                        });
                     }
                     else
                     {
@@ -437,21 +485,7 @@ NSUUID * deviceUUID;
                     NSLog(@"Cannot be converted to JSON");
                 }
                 
-                dispatch_async(dispatch_get_main_queue(), ^{
-                    self.progressBar.hidden = 1;
-                    [self addToLog:[NSString stringWithFormat:@"Uploaded %d entries", currentCounter]];
-                    
-                    
-                    if ([CMMotionActivityManager isActivityAvailable]) {
-                        UIAlertView *message = [[UIAlertView alloc] initWithTitle:@"Further Upload"
-                                                                          message:@"Do you want to upload device activity?"
-                                                                         delegate:self
-                                                                cancelButtonTitle:@"Cancel"
-                                                                otherButtonTitles:@"Yes", nil];
-                        [message show];
-                        
-                    }
-                });
+                
                 
             }
             else {
@@ -640,13 +674,6 @@ NSUUID * deviceUUID;
             [progressQueue addOperationWithBlock:^{
                 NSDateFormatter *formatter = [[NSDateFormatter alloc] init];
                 [formatter setDateFormat:@"Y-M-D H:mm:s"];
-                //        NSLog(@"%@",[formatter stringFromDate:[NSDate date]]);
-                
-                NSManagedObjectContext *context = [self managedObjectContext];
-                
-                NSFetchRequest *allData = [[NSFetchRequest alloc] init];
-                [allData setEntity:[NSEntityDescription entityForName:@"MotionActivityRecord" inManagedObjectContext:context]];
-                [allData setIncludesPropertyValues:NO]; //only fetch the managedObjectID
                 
                 int currentCounter = 0;
                 
@@ -712,6 +739,45 @@ NSUUID * deviceUUID;
     }];
 }
 
+- (BOOL)sendDeviceActivityWithData:(NSMutableArray *)actualData dataTypeKey:(NSArray *)dataTypeKey deviceInfoData:(NSArray *)deviceInfoData deviceInfoKey:(NSArray *)deviceInfoKey newRequest:(NSMutableURLRequest *)newRequest
+{
+    NSDictionary *jsonDictionary = [NSDictionary dictionaryWithObjects:[NSArray arrayWithObjects:deviceInfoKey,deviceInfoData,dataTypeKey,actualData, nil]
+                                                               forKeys:[NSArray arrayWithObjects:@"deviceInfoKey",@"deviceInfoData",@"dataTypeKey",@"dataTypeValue", nil]];
+    
+    NSError *error = nil;
+    if ([NSJSONSerialization isValidJSONObject:jsonDictionary]){
+        NSLog(@"Can be converted to JSON");
+        NSData *jsonData = [NSJSONSerialization dataWithJSONObject:jsonDictionary options:0 error:&error];
+        
+        [newRequest setHTTPMethod:@"POST"];
+        [newRequest setHTTPBody:jsonData];
+        [newRequest setValue:[NSString stringWithFormat:@"%lu", (unsigned long)[jsonData length]] forHTTPHeaderField:@"Content-Length"];
+        
+        NSData *returnData = [NSURLConnection sendSynchronousRequest:newRequest returningResponse:nil     error:&error];
+        if (returnData)
+        {
+            NSString *json=[[NSString alloc] initWithData:returnData encoding:NSUTF8StringEncoding];
+            NSLog(@"Resp string: %@",json);
+            
+            if ([json hasSuffix:@"All success."]) {
+                [self updateLastUpdateDate:[NSDate date]];
+                return YES;
+            }
+        }
+        else
+        {
+            dispatch_async(dispatch_get_main_queue(), ^{
+                [self addToLog:[NSString stringWithFormat:@"Error: %@", error]];
+            });
+            NSLog(@"Error: %@", error);
+        }
+    }
+    else{
+        NSLog(@"Cannot be converted to JSON");
+    }
+    return NO;
+}
+
 - (void)uploadMotionActivityJson
 {
     NSDate *lastUpdateTime = [self getLastUpdateTime];
@@ -740,40 +806,32 @@ NSUUID * deviceUUID;
             });
         }
         else{
-            //            for (CMMotionActivity *activity in activities) {
-            //                // Only need High confidence activity
-            //                if (activity.confidence == CMMotionActivityConfidenceHigh) {
-            //                    // Extract a function return all possible activity
-            //                    if (activity.automotive) NSLog(@"Automotive: %d, Start date: %@", activity.automotive, activity.startDate);
-            //                    if (activity.cycling) NSLog(@"Cycling: %d, Start date: %@", activity.cycling, activity.startDate);
-            //                    if (activity.running) NSLog(@"Running: %d, Start date: %@", activity.running, activity.startDate);
-            //                    if (activity.walking) NSLog(@"Walking: %d, Start date: %@", activity.walking, activity.startDate);
-            //                    if (activity.stationary) NSLog(@"Stationary: %d, Start Date: %@", activity.stationary, activity.startDate);
-            //                }
-            //
-            //            }
-            
             NSString* fullAddress = [NSString stringWithFormat:@"http://%@/Direct/uploadActivityJson.php", self.ipAddress];
             
-            IIBPostRequest *newRequest = [[IIBPostRequest alloc]initWithURLString:fullAddress];
-            [newRequest setPostKey:@"UUID" withValue:deviceUUID.UUIDString];
+             NSMutableURLRequest *newRequest = [[NSMutableURLRequest alloc]initWithURL:[NSURL URLWithString:fullAddress]cachePolicy:NSURLRequestUseProtocolCachePolicy timeoutInterval:30];
             
             // Upload in background
             NSOperationQueue *progressQueue = [[NSOperationQueue alloc] init];
             [progressQueue addOperationWithBlock:^{
+                
+                // Json: {dict:@"deviceInfoKey"{UUID},@"deviceInfoData"{xx-xx-xx}
+                //              @"dataTypeKey"{startTime,activityName,confidenceLevel},@"actualData"{dataArray1,dataArray2..}}
+                
+                NSArray *deviceInfoKey = [NSArray arrayWithObjects:@"UUID", nil];
+                NSArray *deviceInfoData = [NSArray arrayWithObjects: deviceUUID.UUIDString, nil];
+                
+                NSArray *dataTypeKey = [NSArray arrayWithObjects:@"startTime",@"activityName",@"confidenceLevel", nil];
+                NSMutableArray *actualData = [[NSMutableArray alloc]init];
+                
                 NSDateFormatter *formatter = [[NSDateFormatter alloc] init];
-                [formatter setDateFormat:@"Y-M-D H:mm:s"];
+                [formatter setDateFormat:@"Y-M-d H:mm:s"];
                 //        NSLog(@"%@",[formatter stringFromDate:[NSDate date]]);
                 
-                NSManagedObjectContext *context = [self managedObjectContext];
-                
-                NSFetchRequest *allData = [[NSFetchRequest alloc] init];
-                [allData setEntity:[NSEntityDescription entityForName:@"MotionActivityRecord" inManagedObjectContext:context]];
-                [allData setIncludesPropertyValues:NO]; //only fetch the managedObjectID
+                BOOL success = NO;
                 
                 int currentCounter = 0;
-                
-                BOOL uploadOK = 1;
+                int totalCounter = 0;
+                NSDate *latestTimeStamp = [[NSDate alloc]initWithTimeIntervalSince1970:0];
                 
                 for (CMMotionActivity *activity in activities) {
                     if ((activity.confidence == CMMotionActivityConfidenceHigh)||(activity.confidence == CMMotionActivityConfidenceMedium)) {
@@ -791,44 +849,49 @@ NSUUID * deviceUUID;
                         if (activity.confidence == CMMotionActivityConfidenceHigh) confidence = @"High";
                         else confidence = @"Medium";
                         
-                        [newRequest setPostKey:@"startTime" withValue:[formatter stringFromDate:activity.startDate]];
-                        [newRequest setPostKey:@"activityName" withValue:activityName];
-                        [newRequest setPostKey:@"confidenceLevel" withValue:confidence];
-                        
-                        [newRequest prepareForPost];
-                        
-                        NSError *error;
-                        NSData *returnData = [NSURLConnection sendSynchronousRequest:newRequest returningResponse:nil     error:&error];
-                        if (returnData)
-                        {
-                            //                            NSString *json=[[NSString alloc] initWithData:returnData encoding:NSUTF8StringEncoding];
-                            //                            NSLog(@"Resp string: %@",json);
-                        }
-                        else
-                        {
-                            dispatch_async(dispatch_get_main_queue(), ^{
-                                [self addToLog:[NSString stringWithFormat:@"Error: %@", error]];
-                            });
-                            NSLog(@"Error: %@", error);
-                            uploadOK = 0;
-                            break;
-                        }
-                        
+                        [actualData addObject:[NSArray arrayWithObjects:
+                                               [formatter stringFromDate:activity.startDate],
+                                               activityName,
+                                               confidence,
+                                               nil]];
+                       latestTimeStamp = [latestTimeStamp laterDate:activity.startDate];
                         currentCounter++;
+                        totalCounter++;
+                        // Memory concern, 400 max a time
+                        if (currentCounter > 400) {
+                            success = [self sendDeviceActivityWithData:actualData dataTypeKey:dataTypeKey deviceInfoData:deviceInfoData deviceInfoKey:deviceInfoKey newRequest:newRequest];
+                            
+                            currentCounter = 0;
+                            if (success) {
+                                [actualData removeAllObjects];
+                            }
+                            else
+                            {
+                                break;
+                            }
+                        }
                     }
-                    
-                    
-                    
+                }
+                // upload remaining data < 200
+                if (success) {
+                    success = [self sendDeviceActivityWithData:actualData dataTypeKey:dataTypeKey deviceInfoData:deviceInfoData deviceInfoKey:deviceInfoKey newRequest:newRequest];
                 }
                 
-                if (uploadOK) {
+                if (success) {
                     [self updateLastUpdateDate:[NSDate date]];
+                    dispatch_async(dispatch_get_main_queue(), ^{
+                        [self addToLog:[NSString stringWithFormat:@"Uploaded %d high/medium confidence motion activities.", totalCounter]];
+                        [activityView stopAnimating];
+                    });
+                }
+                else
+                {
+                    dispatch_async(dispatch_get_main_queue(), ^{
+                        [self addToLog:[NSString stringWithFormat:@"Failed to upload motion activities."]];
+                        [activityView stopAnimating];
+                    });
                 }
                 
-                dispatch_async(dispatch_get_main_queue(), ^{
-                    [self addToLog:[NSString stringWithFormat:@"Uploaded %d high confidence motion activities.", currentCounter]];
-                    [activityView stopAnimating];
-                });
                 
             }];
         }

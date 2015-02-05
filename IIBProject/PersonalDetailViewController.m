@@ -61,6 +61,19 @@
     [self.navigationController popViewControllerAnimated:YES];
 }
 
+- (BOOL) textFieldShouldReturn:(UITextField *)textField
+{
+    if (textField.returnKeyType == UIReturnKeyNext) {
+        UIView *next = [[textField superview] viewWithTag:textField.tag + 1];
+        [next becomeFirstResponder];
+    }
+    else if (textField.returnKeyType == UIReturnKeyDone) {
+        [textField resignFirstResponder];
+        [self confirmInformation];
+    }
+    return YES;
+}
+
 /*
 #pragma mark - Navigation
 
