@@ -13,16 +13,20 @@
 
 @interface GpsOnMapViewController ()
 
+@property MKUserLocation *userCurrentLocation;
+
 @end
 
 @implementation GpsOnMapViewController
+
+bool noDataFound = 0;
 
 - (void)viewDidLoad {
     [super viewDidLoad];
     
     _mapView.showsUserLocation = YES;
     _mapView.delegate = self;
-
+    
     [self drawAnnotationFromLocalData];
 }
 
@@ -35,38 +39,55 @@
 {
     NSArray *dataReturn = [self getCoreDataWithEntityName:@"DataStorage"];
     
-    double latitudeMax = -DBL_MAX, latitudeMin = DBL_MAX, longitudeMax = -DBL_MAX, longitudeMin = DBL_MAX;
     
-    for (DataStorage * dt in dataReturn) {
-        MapAnnotation *mapAnnotation = [[MapAnnotation alloc]initWithLocation:CLLocationCoordinate2DMake([dt.gpsLatitude doubleValue], [dt.gpsLongitude doubleValue])];
-        mapAnnotation.dataStorage = dt;
-        NSDateFormatter *formatter = [[NSDateFormatter alloc] init];
-        [formatter setDateFormat:@"Y-M-d H:mm:s"];
-        mapAnnotation.title = [NSString stringWithFormat:@"Time: %@", [formatter stringFromDate:dt.timeStamp]];
-
-        [_mapView addAnnotation:mapAnnotation];
-        latitudeMax = [dt.gpsLatitude doubleValue]>latitudeMax ? [dt.gpsLatitude doubleValue] : latitudeMax;
-        latitudeMin = [dt.gpsLatitude doubleValue]<latitudeMax ? [dt.gpsLatitude doubleValue] : latitudeMin;
-        longitudeMax = [dt.gpsLongitude doubleValue]>longitudeMax ? [dt.gpsLongitude doubleValue] : longitudeMax;
-        longitudeMin = [dt.gpsLongitude doubleValue]<longitudeMin ? [dt.gpsLongitude doubleValue] : longitudeMin;
+    if ([dataReturn count]>0) {
+        
+        noDataFound = 0;
+        
+        NSLog(@"Number of data given the chosen date: %lu", (unsigned long)[dataReturn count]);
+        
+        double latitudeMax = -DBL_MAX, latitudeMin = DBL_MAX, longitudeMax = -DBL_MAX, longitudeMin = DBL_MAX;
+        
+        for (DataStorage * dt in dataReturn) {
+            MapAnnotation *mapAnnotation = [[MapAnnotation alloc]initWithLocation:CLLocationCoordinate2DMake([dt.gpsLatitude doubleValue], [dt.gpsLongitude doubleValue])];
+            mapAnnotation.dataStorage = dt;
+            NSDateFormatter *formatter = [[NSDateFormatter alloc] init];
+            [formatter setDateFormat:@"Y-M-d H:mm:s"];
+            mapAnnotation.title = [NSString stringWithFormat:@"Time: %@", [formatter stringFromDate:dt.timeStamp]];
+            
+            [_mapView addAnnotation:mapAnnotation];
+            latitudeMax = [dt.gpsLatitude doubleValue]>latitudeMax ? [dt.gpsLatitude doubleValue] : latitudeMax;
+            latitudeMin = [dt.gpsLatitude doubleValue]<latitudeMin ? [dt.gpsLatitude doubleValue] : latitudeMin;
+            longitudeMax = [dt.gpsLongitude doubleValue]>longitudeMax ? [dt.gpsLongitude doubleValue] : longitudeMax;
+            longitudeMin = [dt.gpsLongitude doubleValue]<longitudeMin ? [dt.gpsLongitude doubleValue] : longitudeMin;
+        }
+        MKCoordinateRegion region;
+        MKCoordinateSpan span = MKCoordinateSpanMake(latitudeMax - latitudeMin, longitudeMax - longitudeMin);
+        
+        CLLocationCoordinate2D location;
+        location.latitude = (latitudeMax + latitudeMin) / 2;
+        location.longitude = (longitudeMax + longitudeMin) / 2;
+        region.span = span;
+        region.center = location;
+        
+        //    // Add a annotation at the span centre
+        //    MapAnnotation *mapAnnotation = [[MapAnnotation alloc]initWithLocation:location];
+        //    [_mapView addAnnotation:mapAnnotation];
+        
+        [_mapView setRegion:region animated:YES];
     }
-    MKCoordinateRegion region;
-    MKCoordinateSpan span;
+    else
+    {
+        UIAlertView *message = [[UIAlertView alloc] initWithTitle:@"Oops"
+                                                          message:@"No available data from your date selection."
+                                                         delegate:nil
+                                                cancelButtonTitle:@"OK"
+                                                otherButtonTitles: nil];
+        [message show];
+        
+        noDataFound = 1;
+    }
     
-    span.latitudeDelta = latitudeMax - latitudeMin;
-    span.longitudeDelta = longitudeMax - longitudeMin;
-    CLLocationCoordinate2D location;
-    location.latitude = (latitudeMax + latitudeMin) / 2;
-    location.longitude = (longitudeMax + longitudeMin) / 2;
-    region.span = span;
-    region.center = location;
-    
-//    // Add a annotation at the span centre
-//    MapAnnotation *mapAnnotation = [[MapAnnotation alloc]initWithLocation:location];
-//    [_mapView addAnnotation:mapAnnotation];
-    
-    [_mapView setRegion:region animated:YES];
-
 }
 
 #pragma mark - Core Data Methods
@@ -79,27 +100,35 @@
     [allData setEntity:[NSEntityDescription entityForName:entityName inManagedObjectContext:context]];
     [allData setIncludesPropertyValues:NO]; //only fetch the managedObjectID
     
+    if (self.predicate != nil) {
+        [allData setPredicate:self.predicate];
+    }
+    
     NSError * error = nil;
     NSArray * data = [context executeFetchRequest:allData error:&error];
     //error handling goes here
     
-//    for (DataStorage * dt in data) {
+    //    for (DataStorage * dt in data) {
     return data;
 }
 
 #pragma mark - Map View Delegate
 
 - (void)mapView:(MKMapView *)aMapView didUpdateUserLocation:(MKUserLocation *)aUserLocation {
-//    MKCoordinateRegion region;
-//    MKCoordinateSpan span;
-//    span.latitudeDelta = 0.05;
-//    span.longitudeDelta = 0.05;
-//    CLLocationCoordinate2D location;
-//    location.latitude = aUserLocation.coordinate.latitude;
-//    location.longitude = aUserLocation.coordinate.longitude;
-//    region.span = span;
-//    region.center = location;
-//    [aMapView setRegion:region animated:YES];
+    self.userCurrentLocation = aUserLocation;
+    
+    if (noDataFound) {
+        MKCoordinateRegion region;
+        MKCoordinateSpan span;
+        span.latitudeDelta = 0.05;
+        span.longitudeDelta = 0.05;
+        CLLocationCoordinate2D location;
+        location.latitude = _userCurrentLocation.coordinate.latitude;
+        location.longitude = _userCurrentLocation.coordinate.longitude;
+        region.span = span;
+        region.center = location;
+        [_mapView setRegion:region animated:YES];
+    }
 }
 
 - (MKAnnotationView *)mapView:(MKMapView *)mapView viewForAnnotation:(id<MKAnnotation>)annotation
@@ -112,17 +141,17 @@
         // Handle any custom annotations.
         if ([annotation isKindOfClass:[MapAnnotation class]])
         {
-
+            
             
             // Try to dequeue an existing pin view first.
             MapAnnotationView*    pinView = (MapAnnotationView*)[mapView
-                                                                     dequeueReusableAnnotationViewWithIdentifier:@"CustomPinAnnotationView"];
+                                                                 dequeueReusableAnnotationViewWithIdentifier:@"CustomPinAnnotationView"];
             
             if (!pinView)
             {
                 // If an existing pin view was not available, create one.
                 pinView = [[MapAnnotationView alloc] initWithAnnotation:annotation
-                                                          reuseIdentifier:@"CustomPinAnnotationView"];
+                                                        reuseIdentifier:@"CustomPinAnnotationView"];
                 pinView.pinColor = MKPinAnnotationColorRed;
                 pinView.animatesDrop = NO;
                 pinView.canShowCallout = YES;
@@ -131,10 +160,10 @@
                 UIButton *rightButton = [UIButton buttonWithType:UIButtonTypeDetailDisclosure];
                 [rightButton addTarget:nil action:nil forControlEvents:UIControlEventTouchUpInside];
                 pinView.rightCalloutAccessoryView = rightButton;
-//                [rightButton addObserver:self
-//                          forKeyPath:@"selected"
-//                             options:NSKeyValueObservingOptionNew
-//                             context:@"ANSELECTED"];
+                //                [rightButton addObserver:self
+                //                          forKeyPath:@"selected"
+                //                             options:NSKeyValueObservingOptionNew
+                //                             context:@"ANSELECTED"];
             }
             else
                 pinView.annotation = annotation;
@@ -153,15 +182,15 @@
         [self performSegueWithIdentifier:@"showDetailAtPosition" sender:annotation];
     }
     
-//    NSLog(@"Right button clicked");
+    //    NSLog(@"Right button clicked");
 }
 
 //- (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context{
-//    
+//
 //    NSString *action = (__bridge NSString*)context;
-//    
+//
 //    if([action isEqualToString:@"ANSELECTED"]){
-//        
+//
 //        BOOL annotationAppeared = [[change valueForKey:@"new"] boolValue];
 //        if (annotationAppeared) {
 //            // clicked on an Annotation

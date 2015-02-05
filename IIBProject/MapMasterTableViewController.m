@@ -7,7 +7,7 @@
 //
 
 #import "MapMasterTableViewController.h"
-#import "GpsOnMapViewController.h"
+#import "DatePickerForMapTableViewController.h"
 
 @interface MapMasterTableViewController ()
 
@@ -42,15 +42,42 @@
     return 2;
 }
 
-/*
+
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
-    UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:<#@"reuseIdentifier"#> forIndexPath:indexPath];
     
-    // Configure the cell...
+    static NSString *MyIdentifier;
+    
+    if (indexPath.row == 0) {
+        MyIdentifier = @"useLocal";
+    }
+    else{
+        MyIdentifier = @"useOnline";
+    }
+    
+    UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:MyIdentifier forIndexPath:indexPath];
+    
+    if (cell == nil) {
+        cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault  reuseIdentifier:MyIdentifier];
+    }
+    
+    if (indexPath.row == 1) {
+        cell.userInteractionEnabled = NO;
+        cell.textLabel.enabled = NO;
+        cell.detailTextLabel.enabled = NO;
+    }
+    
     
     return cell;
 }
-*/
+
+-(void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath{
+    if (indexPath.row == 0) {
+        [self.tableView deselectRowAtIndexPath:indexPath animated:YES];
+        
+        [self performSegueWithIdentifier:@"showGpsOnMapByLocalData" sender:nil];
+    }
+}
+
 
 /*
 // Override to support conditional editing of the table view.
@@ -94,8 +121,8 @@
    //  Get the new view controller using [segue destinationViewController].
    //  Pass the selected object to the new view controller.
     if ([[segue identifier] isEqualToString:@"showGpsOnMapByLocalData"]) {
-        GpsOnMapViewController *vc = [segue destinationViewController];
-        vc.title = @"GPS by Local Data";
+        DatePickerForMapTableViewController *vc = [segue destinationViewController];
+        vc.title = @"Choose date to display";
         [vc setManagedObjectContext:_managedObjectContext];
     }
 }

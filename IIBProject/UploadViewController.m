@@ -55,7 +55,7 @@ NSUUID * deviceUUID;
     // Get the stored data before the view loads
     NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
     
-    if (![defaults boolForKey:@"deleteLocalValue"]) {
+    if ([defaults objectForKey:@"deleteLocalValue"] == nil) {
         [defaults setBool:NO forKey:@"deleteLocalValue"];
     }
     _deleteLocalSwitch.on = [defaults boolForKey:@"deleteLocalValue"];

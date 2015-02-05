@@ -22,6 +22,7 @@
 		2277A6781A672A9B00396BE8 /* DataUsageTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 2277A6771A672A9B00396BE8 /* DataUsageTableViewController.m */; };
 		228EF2D21A6819B400B7A14C /* UploadViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 228EF2D11A6819B400B7A14C /* UploadViewController.m */; };
 		22A6AE8A1A7ED8D4009DF002 /* PersonalDetailViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 22A6AE891A7ED8D4009DF002 /* PersonalDetailViewController.m */; };
+		22D3A36A1A83CED80072AD11 /* DatePickerForMapTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 22D3A3691A83CED80072AD11 /* DatePickerForMapTableViewController.m */; };
 		22D547511A700759006D806C /* Reachability.m in Sources */ = {isa = PBXBuildFile; fileRef = 22D547501A700759006D806C /* Reachability.m */; };
 		22D91F8F1A6917B8001DC248 /* CoreLocation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 22D91F8E1A6917B8001DC248 /* CoreLocation.framework */; };
 		22FF970F1A77AB6200ED3CED /* GpsOnMapViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 22FF970E1A77AB6200ED3CED /* GpsOnMapViewController.m */; };
@@ -70,6 +71,8 @@
 		228EF2D11A6819B400B7A14C /* UploadViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = UploadViewController.m; sourceTree = "<group>"; };
 		22A6AE881A7ED8D4009DF002 /* PersonalDetailViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PersonalDetailViewController.h; sourceTree = "<group>"; };
 		22A6AE891A7ED8D4009DF002 /* PersonalDetailViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PersonalDetailViewController.m; sourceTree = "<group>"; };
+		22D3A3681A83CED80072AD11 /* DatePickerForMapTableViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DatePickerForMapTableViewController.h; sourceTree = "<group>"; };
+		22D3A3691A83CED80072AD11 /* DatePickerForMapTableViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DatePickerForMapTableViewController.m; sourceTree = "<group>"; };
 		22D5474F1A700759006D806C /* Reachability.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Reachability.h; sourceTree = "<group>"; };
 		22D547501A700759006D806C /* Reachability.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Reachability.m; sourceTree = "<group>"; };
 		22D91F8E1A6917B8001DC248 /* CoreLocation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreLocation.framework; path = System/Library/Frameworks/CoreLocation.framework; sourceTree = SDKROOT; };
@@ -194,6 +197,8 @@
 			children = (
 				22FF97101A77ABE700ED3CED /* MapMasterTableViewController.h */,
 				22FF97111A77ABE700ED3CED /* MapMasterTableViewController.m */,
+				22D3A3681A83CED80072AD11 /* DatePickerForMapTableViewController.h */,
+				22D3A3691A83CED80072AD11 /* DatePickerForMapTableViewController.m */,
 				22FF970D1A77AB6200ED3CED /* GpsOnMapViewController.h */,
 				22FF970E1A77AB6200ED3CED /* GpsOnMapViewController.m */,
 				22FF97181A77B0EB00ED3CED /* MapAnnotation.h */,
@@ -344,6 +349,7 @@
 				22FF970F1A77AB6200ED3CED /* GpsOnMapViewController.m in Sources */,
 				22FF971D1A77B3D800ED3CED /* MapAnnotationView.m in Sources */,
 				2277A6501A672A5800396BE8 /* AppDelegate.m in Sources */,
+				22D3A36A1A83CED80072AD11 /* DatePickerForMapTableViewController.m in Sources */,
 				2277A64D1A672A5800396BE8 /* main.m in Sources */,
 				22D547511A700759006D806C /* Reachability.m in Sources */,
 				2277A6531A672A5800396BE8 /* IIBProject.xcdatamodeld in Sources */,
