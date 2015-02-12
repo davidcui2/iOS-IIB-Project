@@ -128,7 +128,7 @@ NSUUID * deviceUUID;
 //    NSString* fullAddress = [NSString stringWithFormat:@"http://%@/Direct/uploadDataUsage.php", self.ipAddress];
 //    [self httpPostWithOneEntryEach:fullAddress];
     
-    NSString* fullAddress = [NSString stringWithFormat:@"http://%@/Direct/uploadDataUsageJson.php", self.ipAddress];
+    NSString* fullAddress = [NSString stringWithFormat:@"http://%@/Direct/uploadDataUsageJson2.php", self.ipAddress];
     [self httpPostWithJson:fullAddress];
     
 }
@@ -383,7 +383,7 @@ NSUUID * deviceUUID;
                                    , nil];
         
         NSArray *dataTypeKey = [NSArray arrayWithObjects:@"timeStamp",@"wifiSent",@"wifiReceived",@"wwanSent",
-                                @"wwanReceived",@"gpsLatitude",@"gpsLongitude",@"estimateSpeed", nil];
+                                @"wwanReceived",@"gpsLatitude",@"gpsLongitude",@"estimateSpeed",@"signalStrength", nil];
         NSMutableArray *actualData = [[NSMutableArray alloc]initWithCapacity:count];
         
         NSDateFormatter *formatter = [[NSDateFormatter alloc] init];
@@ -419,7 +419,8 @@ NSUUID * deviceUUID;
                                    [dt.wwanReceived stringValue],
                                    [dt.gpsLatitude stringValue],
                                    [dt.gpsLongitude stringValue],
-                                   [dt.estimateSpeed stringValue], nil]];
+                                   [dt.estimateSpeed stringValue],
+                                   [dt.signalStrength stringValue], nil]];
             
             latestTimeStamp = [latestTimeStamp laterDate:dt.timeStamp];
             currentCounter++;

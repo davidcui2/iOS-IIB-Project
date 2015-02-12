@@ -15,6 +15,8 @@
 
 @property MKUserLocation *userCurrentLocation;
 
+@property (nonatomic, retain) NSMutableArray * allAnnotations;
+
 @end
 
 @implementation GpsOnMapViewController
@@ -39,6 +41,17 @@ bool noDataFound = 0;
 {
     NSArray *dataReturn = [self getCoreDataWithEntityName:@"DataStorage"];
     
+    if (_allAnnotations == nil) {
+        _allAnnotations = [NSMutableArray array];
+    }
+    else
+    {
+        [_allAnnotations removeAllObjects];
+    }
+    
+    NSDate * lastDate = nil;
+    double amountDataUsed = 0;
+    CLLocationCoordinate2D lastCoord;
     
     if ([dataReturn count]>0) {
         
@@ -54,8 +67,59 @@ bool noDataFound = 0;
             NSDateFormatter *formatter = [[NSDateFormatter alloc] init];
             [formatter setDateFormat:@"Y-M-d H:mm:s"];
             mapAnnotation.title = [NSString stringWithFormat:@"Time: %@", [formatter stringFromDate:dt.timeStamp]];
+            if (lastDate == nil) {
+                mapAnnotation.subTitle = @"This is the first point in database.";
+            }
+            else{
+                NSString *amountData, *distanceTravelled, *timeTravelled;
+                
+//                NSCalendar *gregorian = [[NSCalendar alloc]
+//                                         initWithCalendarIdentifier:NSGregorianCalendar];
+//                
+//                NSUInteger unitFlags = NSMonthCalendarUnit | NSDayCalendarUnit;
+//                
+//                NSDateComponents *components = [gregorian components:unitFlags
+//                                                            fromDate:lastDate
+//                                                              toDate:dt.timeStamp options:0];
+//                
+//                timeTravelled = [[NSString alloc]init];
+//                if ([components month]) {
+//                    timeTravelled = [timeTravelled stringByAppendingString:[NSString stringWithFormat:@"%li month",(long)[components month]]];
+//                }
+//                if ([components day]) {
+//                    timeTravelled = [timeTravelled stringByAppendingString:[NSString stringWithFormat:@" %li days",(long)[components day]]];
+//                }
+//                if ([components hour]) {
+//                    timeTravelled = [timeTravelled stringByAppendingString:[NSString stringWithFormat:@" %li hrs",(long)[components hour]]];
+//                }
+//                if ([components minute]) {
+//                    timeTravelled = [timeTravelled stringByAppendingString:[NSString stringWithFormat:@" %li mins",(long)[components minute]]];
+//                }
+//                if ([components second]) {
+//                    timeTravelled = [timeTravelled stringByAppendingString:[NSString stringWithFormat:@" %li s",(long)[components second]]];
+//                }
+                
+                int timeInterval = (int)[dt.timeStamp timeIntervalSinceDate:lastDate];
+                timeTravelled = [NSString stringWithFormat:@"%i min %i s",(timeInterval/60),(timeInterval%60)];
+                
+                distanceTravelled = [NSString stringWithFormat:@"%.f m",[[[CLLocation alloc]initWithLatitude:lastCoord.latitude longitude:lastCoord.longitude] distanceFromLocation:[[CLLocation alloc]initWithLatitude:[dt.gpsLatitude doubleValue] longitude:[dt.gpsLongitude doubleValue]]]];
+                
+                double amountDataNow  = [dt.wifiReceived doubleValue] + [dt.wifiSent doubleValue] + [dt.wwanSent doubleValue] + [dt.wwanReceived doubleValue];
+                
+                amountDataUsed = amountDataNow < amountDataUsed ? amountDataNow : amountDataNow - amountDataUsed;
+                
+                amountData = [NSString stringWithFormat:@"%i Mb", (int)amountDataUsed/1000];
+                
+                mapAnnotation.subTitle = [NSString stringWithFormat:@"Used %@ in the past %@ during %@.",amountData, distanceTravelled, timeTravelled];
+            }
             
-            [_mapView addAnnotation:mapAnnotation];
+            amountDataUsed = [dt.wwanReceived doubleValue] + [dt.wwanSent doubleValue] + [dt.wifiReceived doubleValue]+ [dt.wifiSent doubleValue];
+            lastCoord = CLLocationCoordinate2DMake([dt.gpsLatitude doubleValue], [dt.gpsLongitude doubleValue]);
+            lastDate = dt.timeStamp;
+            
+            [_allAnnotations addObject:mapAnnotation];
+            
+//            [_mapView addAnnotation:mapAnnotation];
             latitudeMax = [dt.gpsLatitude doubleValue]>latitudeMax ? [dt.gpsLatitude doubleValue] : latitudeMax;
             latitudeMin = [dt.gpsLatitude doubleValue]<latitudeMin ? [dt.gpsLatitude doubleValue] : latitudeMin;
             longitudeMax = [dt.gpsLongitude doubleValue]>longitudeMax ? [dt.gpsLongitude doubleValue] : longitudeMax;
@@ -73,6 +137,8 @@ bool noDataFound = 0;
         //    // Add a annotation at the span centre
         //    MapAnnotation *mapAnnotation = [[MapAnnotation alloc]initWithLocation:location];
         //    [_mapView addAnnotation:mapAnnotation];
+        
+        [_mapView addAnnotations:_allAnnotations];
         
         [_mapView setRegion:region animated:YES];
     }
@@ -103,6 +169,9 @@ bool noDataFound = 0;
     if (self.predicate != nil) {
         [allData setPredicate:self.predicate];
     }
+    
+    NSSortDescriptor *sortDate = [NSSortDescriptor sortDescriptorWithKey:@"timeStamp" ascending:YES];
+    [allData setSortDescriptors:@[sortDate]];
     
     NSError * error = nil;
     NSArray * data = [context executeFetchRequest:allData error:&error];

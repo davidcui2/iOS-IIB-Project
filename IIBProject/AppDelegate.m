@@ -17,11 +17,20 @@
 #include <ifaddrs.h>
 #include <net/if_dl.h>
 
+// For Signal
+#import <CoreTelephony/CTCarrier.h>
+#import <CoreTelephony/CTTelephonyNetworkInfo.h>
+
 
 @interface AppDelegate ()
 
 @property (nonatomic, retain) NSArray *dataCounters;
 - (NSArray *)getDataCounters;
+
+#pragma mark - Get CT Signal Strength
+
+int CTGetSignalStrength(); // private method (not in the header) of Core Telephony
+
 
 @end
 
@@ -133,6 +142,11 @@
     dataUsageInfo.gpsLongitude = [NSNumber numberWithDouble:self.lastLocation.coordinate.longitude];
     dataUsageInfo.estimateSpeed = [NSNumber numberWithDouble:self.lastLocation.speed];
     
+    NSLog(@"Current Signal Strength: -%d dB", CTGetSignalStrength()); // or do what you want
+
+    
+    dataUsageInfo.signalStrength = [NSNumber numberWithInt:CTGetSignalStrength()];
+    
     // Count all entities
     NSFetchRequest *fetchRequest = [[NSFetchRequest alloc] init];
     [fetchRequest setEntity:[NSEntityDescription entityForName:@"DataStorage" inManagedObjectContext:self.managedObjectContext]];
@@ -234,10 +248,16 @@
     // Create the coordinator and store
     
     _persistentStoreCoordinator = [[NSPersistentStoreCoordinator alloc] initWithManagedObjectModel:[self managedObjectModel]];
+    
+    NSDictionary *options = @{
+                              NSMigratePersistentStoresAutomaticallyOption : @YES,
+                              NSInferMappingModelAutomaticallyOption : @YES
+                              };
+    
     NSURL *storeURL = [[self applicationDocumentsDirectory] URLByAppendingPathComponent:@"IIBProject.sqlite"];
     NSError *error = nil;
     NSString *failureReason = @"There was an error creating or loading the application's saved data.";
-    if (![_persistentStoreCoordinator addPersistentStoreWithType:NSSQLiteStoreType configuration:nil URL:storeURL options:nil error:&error]) {
+    if (![_persistentStoreCoordinator addPersistentStoreWithType:NSSQLiteStoreType configuration:nil URL:storeURL options:options error:&error]) {
         // Report any error we got.
         NSMutableDictionary *dict = [NSMutableDictionary dictionary];
         dict[NSLocalizedDescriptionKey] = @"Failed to initialize the application's saved data";

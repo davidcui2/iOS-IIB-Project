@@ -20,10 +20,12 @@
     return self;
 }
 
-
-
 - (NSString *)title{
     return _title;
+}
+
+- (NSString *)subtitle{
+    return _subTitle;
 }
 
 @end

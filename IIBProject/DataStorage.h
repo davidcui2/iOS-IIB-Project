@@ -2,7 +2,7 @@
 //  DataStorage.h
 //  IIBProject
 //
-//  Created by Zhihao Cui on 22/01/2015.
+//  Created by Zhihao Cui on 12/02/2015.
 //  Copyright (c) 2015 Zhihao Cui. All rights reserved.
 //
 
@@ -12,6 +12,7 @@
 
 @interface DataStorage : NSManagedObject
 
+@property (nonatomic, retain) NSNumber * estimateSpeed;
 @property (nonatomic, retain) NSNumber * gpsLatitude;
 @property (nonatomic, retain) NSNumber * gpsLongitude;
 @property (nonatomic, retain) NSDate * timeStamp;
@@ -19,6 +20,6 @@
 @property (nonatomic, retain) NSNumber * wifiSent;
 @property (nonatomic, retain) NSNumber * wwanReceived;
 @property (nonatomic, retain) NSNumber * wwanSent;
-@property (nonatomic, retain) NSNumber * estimateSpeed;
+@property (nonatomic, retain) NSNumber * signalStrength;
 
 @end

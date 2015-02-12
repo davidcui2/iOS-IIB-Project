@@ -37,8 +37,8 @@
 }
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
-    // Time + Data * 4 + gps * 2
-    return 7;
+    // Time + Data * 4 + gps * 2 + signal strength
+    return 8;
 }
 
 
@@ -83,6 +83,10 @@
             cell.textLabel.text = @"Latitude";
             cell.detailTextLabel.text = [NSString stringWithFormat:@"%.8f", [_dataToDisplay.gpsLatitude doubleValue]];
             break;
+        case 7:
+            cell.textLabel.text = @"Signal Strength";
+            cell.detailTextLabel.text = [NSString stringWithFormat:@"-%i dB", [_dataToDisplay.signalStrength intValue]];
+
         default:
             break;
     }
