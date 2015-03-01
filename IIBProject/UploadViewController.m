@@ -87,9 +87,6 @@ NSUUID * deviceUUID;
     
     // TEST!!!
     //    [self updateLastUpdateDate:[NSDate dateWithTimeIntervalSinceNow:-1*3600*24]];
-    
-    
-    
 }
 
 - (void)didReceiveMemoryWarning {
