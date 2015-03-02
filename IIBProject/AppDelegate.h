@@ -10,6 +10,7 @@
 #import <CoreData/CoreData.h>
 #import "DataStorage.h"
 #import <CoreLocation/CoreLocation.h>
+#import <CoreTelephony/CTTelephonyNetworkInfo.h>
 
 
 @interface AppDelegate : UIResponder <UIApplicationDelegate>

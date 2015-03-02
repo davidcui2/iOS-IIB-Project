@@ -90,7 +90,7 @@ CMMotionManager *motionManager;
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
     // Return the number of rows in the section.
-    return self.dataCounters.count + 2 + self.motionData.count; // 2 - GPS
+    return self.dataCounters.count + 2 + 1 + self.motionData.count; // 2 - GPS , 1 - CT Radio access technology
 }
 
 
@@ -127,8 +127,12 @@ CMMotionManager *motionManager;
             cell.textLabel.text = @"Latitude";
             cell.detailTextLabel.text = [NSString stringWithFormat:@"%.8f", self.lastLocation.coordinate.latitude];
             break;
+        case 6:
+            cell.textLabel.text = @"CTRadioAccess";
+            cell.detailTextLabel.text = [[[CTTelephonyNetworkInfo new]currentRadioAccessTechnology]substringFromIndex:23];
+            break;
         default:
-            cell.textLabel.text = [[[self.motionData allKeys] sortedArrayUsingSelector:@selector(caseInsensitiveCompare:)] objectAtIndex:indexPath.row-6];
+            cell.textLabel.text = [[[self.motionData allKeys] sortedArrayUsingSelector:@selector(caseInsensitiveCompare:)] objectAtIndex:indexPath.row-7];
             cell.detailTextLabel.text = [NSString stringWithFormat:@"%@", [self.motionData objectForKey:cell.textLabel.text]];
             break;
     }

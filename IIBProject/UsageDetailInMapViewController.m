@@ -37,8 +37,8 @@
 }
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
-    // Time + Data * 4 + gps * 2 + signal strength
-    return 8;
+    // Time + Data * 4 + gps * 2 + signal strength + access technology
+    return 9;
 }
 
 
@@ -86,7 +86,11 @@
         case 7:
             cell.textLabel.text = @"Signal Strength";
             cell.detailTextLabel.text = [NSString stringWithFormat:@"-%i dB", [_dataToDisplay.signalStrength intValue]];
-
+            break;
+        case 8:
+            cell.textLabel.text = @"Radio Technology";
+            cell.detailTextLabel.text = [NSString stringWithFormat:@"%@", _dataToDisplay.radioAccess];
+            break;
         default:
             break;
     }

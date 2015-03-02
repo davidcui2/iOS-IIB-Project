@@ -14,6 +14,8 @@
 // For Accelerometer
 #import <CoreMotion/CoreMotion.h>
 
+#import <CoreTelephony/CTTelephonyNetworkInfo.h>
+
 
 @protocol PassBackManagedObjectContextDelegate
 

@@ -10,7 +10,7 @@
 		2245FD8A1A6D790300D6526C /* MotionActivityRecord.m in Sources */ = {isa = PBXBuildFile; fileRef = 2245FD891A6D790300D6526C /* MotionActivityRecord.m */; };
 		2245FD8C1A6E8E5B00D6526C /* CoreMotion.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2245FD8B1A6E8E5B00D6526C /* CoreMotion.framework */; };
 		224BC59D1A8D6ABA008E207F /* CoreTelephony.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 224BC59C1A8D6ABA008E207F /* CoreTelephony.framework */; };
-		224BC5A11A8D7104008E207F /* DataStorage.m in Sources */ = {isa = PBXBuildFile; fileRef = 224BC5A01A8D7104008E207F /* DataStorage.m */; };
+		224EE2B31AA3E65F00CD7071 /* DataStorage.m in Sources */ = {isa = PBXBuildFile; fileRef = 224EE2B21AA3E65F00CD7071 /* DataStorage.m */; };
 		22776A451A759253001AAF51 /* IIBPostRequest.m in Sources */ = {isa = PBXBuildFile; fileRef = 22776A441A759253001AAF51 /* IIBPostRequest.m */; };
 		2277A64D1A672A5800396BE8 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 2277A64C1A672A5800396BE8 /* main.m */; };
 		2277A6501A672A5800396BE8 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 2277A64F1A672A5800396BE8 /* AppDelegate.m */; };
@@ -50,8 +50,9 @@
 		2245FD8B1A6E8E5B00D6526C /* CoreMotion.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreMotion.framework; path = System/Library/Frameworks/CoreMotion.framework; sourceTree = SDKROOT; };
 		224BC59C1A8D6ABA008E207F /* CoreTelephony.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreTelephony.framework; path = System/Library/Frameworks/CoreTelephony.framework; sourceTree = SDKROOT; };
 		224BC59E1A8D6EB4008E207F /* IIBProject 2.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = "IIBProject 2.xcdatamodel"; sourceTree = "<group>"; };
-		224BC59F1A8D7104008E207F /* DataStorage.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DataStorage.h; sourceTree = "<group>"; };
-		224BC5A01A8D7104008E207F /* DataStorage.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DataStorage.m; sourceTree = "<group>"; };
+		224EE2B01AA3E60B00CD7071 /* IIBProject 3.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = "IIBProject 3.xcdatamodel"; sourceTree = "<group>"; };
+		224EE2B11AA3E65F00CD7071 /* DataStorage.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DataStorage.h; sourceTree = "<group>"; };
+		224EE2B21AA3E65F00CD7071 /* DataStorage.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DataStorage.m; sourceTree = "<group>"; };
 		22776A431A759253001AAF51 /* IIBPostRequest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = IIBPostRequest.h; sourceTree = "<group>"; };
 		22776A441A759253001AAF51 /* IIBPostRequest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = IIBPostRequest.m; sourceTree = "<group>"; };
 		2277A6471A672A5800396BE8 /* IIBProject.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = IIBProject.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -230,8 +231,8 @@
 			children = (
 				2245FD881A6D790300D6526C /* MotionActivityRecord.h */,
 				2245FD891A6D790300D6526C /* MotionActivityRecord.m */,
-				224BC59F1A8D7104008E207F /* DataStorage.h */,
-				224BC5A01A8D7104008E207F /* DataStorage.m */,
+				224EE2B11AA3E65F00CD7071 /* DataStorage.h */,
+				224EE2B21AA3E65F00CD7071 /* DataStorage.m */,
 			);
 			name = "Core Data";
 			sourceTree = "<group>";
@@ -300,6 +301,7 @@
 					};
 					2277A6651A672A5900396BE8 = {
 						CreatedOnToolsVersion = 6.1.1;
+						DevelopmentTeam = 5QB7973RVT;
 						TestTargetID = 2277A6461A672A5800396BE8;
 					};
 				};
@@ -364,7 +366,7 @@
 				2277A6781A672A9B00396BE8 /* DataUsageTableViewController.m in Sources */,
 				22776A451A759253001AAF51 /* IIBPostRequest.m in Sources */,
 				22A6AE8A1A7ED8D4009DF002 /* PersonalDetailViewController.m in Sources */,
-				224BC5A11A8D7104008E207F /* DataStorage.m in Sources */,
+				224EE2B31AA3E65F00CD7071 /* DataStorage.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -520,6 +522,8 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(SDKROOT)/Developer/Library/Frameworks",
 					"$(inherited)",
@@ -531,6 +535,7 @@
 				INFOPLIST_FILE = IIBProjectTests/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE = "";
 				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/IIBProject.app/IIBProject";
 			};
 			name = Debug;
@@ -539,6 +544,8 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(SDKROOT)/Developer/Library/Frameworks",
 					"$(inherited)",
@@ -546,6 +553,7 @@
 				INFOPLIST_FILE = IIBProjectTests/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE = "";
 				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/IIBProject.app/IIBProject";
 			};
 			name = Release;
@@ -587,9 +595,10 @@
 			isa = XCVersionGroup;
 			children = (
 				224BC59E1A8D6EB4008E207F /* IIBProject 2.xcdatamodel */,
+				224EE2B01AA3E60B00CD7071 /* IIBProject 3.xcdatamodel */,
 				2277A6521A672A5800396BE8 /* IIBProject.xcdatamodel */,
 			);
-			currentVersion = 224BC59E1A8D6EB4008E207F /* IIBProject 2.xcdatamodel */;
+			currentVersion = 224EE2B01AA3E60B00CD7071 /* IIBProject 3.xcdatamodel */;
 			path = IIBProject.xcdatamodeld;
 			sourceTree = "<group>";
 			versionGroupType = wrapper.xcdatamodel;

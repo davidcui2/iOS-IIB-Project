@@ -142,6 +142,8 @@ int CTGetSignalStrength(); // private method (not in the header) of Core Telepho
     dataUsageInfo.gpsLongitude = [NSNumber numberWithDouble:self.lastLocation.coordinate.longitude];
     dataUsageInfo.estimateSpeed = [NSNumber numberWithDouble:self.lastLocation.speed];
     
+    dataUsageInfo.radioAccess = [[[CTTelephonyNetworkInfo new]currentRadioAccessTechnology]substringFromIndex:23];
+    
     NSLog(@"Current Signal Strength: -%d dB", CTGetSignalStrength()); // or do what you want
 
     
