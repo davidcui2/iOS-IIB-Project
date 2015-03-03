@@ -125,7 +125,7 @@ NSUUID * deviceUUID;
 //    NSString* fullAddress = [NSString stringWithFormat:@"http://%@/Direct/uploadDataUsage.php", self.ipAddress];
 //    [self httpPostWithOneEntryEach:fullAddress];
     
-    NSString* fullAddress = [NSString stringWithFormat:@"http://%@/Direct/uploadDataUsageJson2.php", self.ipAddress];
+    NSString* fullAddress = [NSString stringWithFormat:@"http://%@/Direct/uploadDataUsageJson3.php", self.ipAddress];
     [self httpPostWithJson:fullAddress];
     
 }
@@ -380,7 +380,7 @@ NSUUID * deviceUUID;
                                    , nil];
         
         NSArray *dataTypeKey = [NSArray arrayWithObjects:@"timeStamp",@"wifiSent",@"wifiReceived",@"wwanSent",
-                                @"wwanReceived",@"gpsLatitude",@"gpsLongitude",@"estimateSpeed",@"signalStrength", nil];
+                                @"wwanReceived",@"gpsLatitude",@"gpsLongitude",@"estimateSpeed",@"signalStrength",@"radioAccess", nil];
         NSMutableArray *actualData = [[NSMutableArray alloc]initWithCapacity:count];
         
         NSDateFormatter *formatter = [[NSDateFormatter alloc] init];
@@ -417,7 +417,8 @@ NSUUID * deviceUUID;
                                    [dt.gpsLatitude stringValue],
                                    [dt.gpsLongitude stringValue],
                                    [dt.estimateSpeed stringValue],
-                                   [dt.signalStrength stringValue], nil]];
+                                   [dt.signalStrength stringValue],
+                                   dt.radioAccess, nil]];
             
             latestTimeStamp = [latestTimeStamp laterDate:dt.timeStamp];
             currentCounter++;
@@ -906,6 +907,7 @@ NSUUID * deviceUUID;
      if ([[segue identifier] isEqualToString:@"showPersonalDetail"]) {
          PersonalDetailViewController *vc = [segue destinationViewController];
          vc.navigationItem.backBarButtonItem.enabled = false;
+         [vc setManagedObjectContext:_managedObjectContext];
          vc.title = @"My Details";
      }
  }

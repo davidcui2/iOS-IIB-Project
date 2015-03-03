@@ -50,7 +50,14 @@ static NSString *kDatePickerID = @"datePicker"; // the cell containing the date 
     self.navigationItem.rightBarButtonItem = doneButton;
     
     // setup our data source
-    NSMutableDictionary *itemOne = [@{ kTitleKey : @"Use all data available" } mutableCopy];
+    NSMutableDictionary *itemOne;
+    if (_useLocalData) {
+        itemOne = [@{ kTitleKey : @"Use all data available" } mutableCopy];
+    }
+    else {
+        itemOne = [@{ kTitleKey : @"Fetch all data online" } mutableCopy];
+    }
+    
     NSMutableDictionary *itemTwo = [@{ kTitleKey : @"Start Date",
                                        kDateKey : [NSDate dateWithTimeIntervalSinceNow:-7*24*3600] } mutableCopy];
     NSMutableDictionary *itemThree = [@{ kTitleKey : @"End Date",
@@ -391,7 +398,177 @@ static NSString *kDatePickerID = @"datePicker"; // the cell containing the date 
                      completion:^(BOOL finished) {
                          [self.pickerView removeFromSuperview];
                      }];
-    [self performSegueWithIdentifier:@"showMapByDate" sender:nil];
+    if (_useLocalData) {
+        [self performSegueWithIdentifier:@"showMapByDate" sender:nil];
+    }
+    else {
+        [self getOnlineData];
+    }
+}
+
+- (void)getOnlineData {
+    
+    NSString* fullAddress = [NSString stringWithFormat:@"https://www.zhihaodatatrack.com/Direct/Get/getCurrentDeviceData.php?UUID=%@",[[[UIDevice currentDevice] identifierForVendor]UUIDString]];
+    
+    NSDateFormatter * dateFormatter = [[NSDateFormatter alloc]init];
+    [dateFormatter setDateFormat:@"yyyy-MM-dd-HH-mm-ss"];
+    
+    if (self.switchView.on) {
+        fullAddress = [fullAddress stringByAppendingString:[NSString stringWithFormat:@"&endDate=%@",[dateFormatter stringFromDate:[self getLatestLocalDataTime]]]];
+    }
+    else {
+        NSDate * startDate = [self.dataArray[1] objectForKey:kDateKey];
+        NSDate * endDate = [self.dataArray[2] objectForKey:kDateKey];
+        
+        fullAddress = [fullAddress stringByAppendingString:[NSString stringWithFormat:@"&beginDate=%@&endDate=%@",[dateFormatter stringFromDate:startDate],[dateFormatter stringFromDate:endDate]]];
+    }
+    
+    UIActivityIndicatorView *activityView=[[UIActivityIndicatorView alloc]     initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleGray];
+    activityView.center=self.view.center;
+    [activityView startAnimating];
+    [self.view addSubview:activityView];
+    
+    NSMutableURLRequest *newRequest = [[NSMutableURLRequest alloc]initWithURL:[NSURL URLWithString:fullAddress]cachePolicy:NSURLRequestUseProtocolCachePolicy timeoutInterval:30];
+    
+    // Upload in background
+//    NSOperationQueue *progressQueue = [[NSOperationQueue alloc] init];
+//    [progressQueue addOperationWithBlock:^{
+    
+//        [newRequest setValue:@"application/x-www-form-urlencoded" forHTTPHeaderField:@"Content-Type"];
+        NSURLResponse *response;
+    NSError * getError;
+        NSData *GETReply = [NSURLConnection sendSynchronousRequest:newRequest returningResponse:&response error:&getError];
+    if (getError) {
+        NSLog(@"%@",getError);
+    }
+        NSString *theReply = [[NSString alloc] initWithBytes:[GETReply bytes] length:[GETReply length] encoding: NSASCIIStringEncoding];
+        NSLog(@"Reply: %@", theReply);
+
+        if ([theReply isEqualToString:@"null"]) {
+            UIAlertView * alert = [[UIAlertView alloc]initWithTitle:@"Ooops" message:@"You've got all data on the current device" delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil];
+            [alert show];
+            [self.navigationController popViewControllerAnimated:YES];
+            return;
+        }
+    
+        NSError* jsonError;
+        NSArray* jsonArray = [NSJSONSerialization JSONObjectWithData:GETReply options:NSJSONReadingMutableLeaves error:&jsonError];
+//        NSLog(@"%@",[jsonArray[0] description]);
+//    NSLog(@"timeStamp: %@",);
+    
+    int insertCount = [self insertJsonToCoreData:jsonArray];
+//    }];
+    
+    [activityView stopAnimating];
+
+    
+
+    if (!insertCount) {
+        UIAlertView * alert = [[UIAlertView alloc]initWithTitle:@"Ooops" message:@"Fetch data failed, come back later." delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil];
+        [alert show];
+    }
+    else {
+        UIAlertView * alert = [[UIAlertView alloc]initWithTitle:@"Success" message:[NSString stringWithFormat:@"Fetched %i new data.",insertCount] delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil];
+        [alert show];
+    }
+    
+    [self.navigationController popViewControllerAnimated:YES];
+    return;
+}
+
+- (NSDate *)getLatestLocalDataTime {
+    NSFetchRequest *request = [NSFetchRequest fetchRequestWithEntityName:@"DataStorage"];
+    NSSortDescriptor *sdSortDate = [NSSortDescriptor sortDescriptorWithKey:@"timeStamp" ascending:YES];
+    [request setSortDescriptors:@[sdSortDate]];
+    [request setFetchLimit:1];
+    NSError *error;
+    NSArray *results = [_managedObjectContext executeFetchRequest:request error:&error];
+    
+    if ([results count]==0) {
+        NSLog(@"%@",error);
+    }
+    else {
+        return ((DataStorage *)results[0]).timeStamp;
+    }
+    return [NSDate date];
+}
+
+- (int) insertJsonToCoreData:(NSArray*)jsonArray {
+    int newInsertCount = 0;
+    NSManagedObjectContext * context = _managedObjectContext;
+    
+    NSFetchRequest *request = [[NSFetchRequest alloc] init];
+    
+    request.entity = [NSEntityDescription entityForName:@"DataStorage" inManagedObjectContext:context];
+    
+    NSDateFormatter *dateFormatter = [[NSDateFormatter alloc]init];
+    [dateFormatter setDateFormat:@"Y-M-d H:mm:s"];
+    for (NSDictionary * dict in jsonArray) {
+        DataStorage *dataUsageInfo = nil;
+        NSDate * timeStamp = [dateFormatter dateFromString:[dict valueForKey:@"timeStamp"]];
+        
+        request.predicate = [NSPredicate predicateWithFormat:@"timeStamp = %@", timeStamp];
+        NSError * executeFetchError = nil;
+        dataUsageInfo = [[context executeFetchRequest:request error:&executeFetchError] lastObject];
+        
+        if (executeFetchError) {
+            NSLog(@"[%@, %@] error looking up date: %@ with error: %@", NSStringFromClass([self class]), NSStringFromSelector(_cmd), [dict valueForKey:@"timeStamp"], [executeFetchError localizedDescription]);
+        }
+        else if (!dataUsageInfo) {
+            // Insert a new one
+            dataUsageInfo = [NSEntityDescription
+                                          insertNewObjectForEntityForName:@"DataStorage" inManagedObjectContext:context];
+            dataUsageInfo.timeStamp = timeStamp;
+            dataUsageInfo.wifiSent = [NSNumber numberWithInt:[[dict valueForKey:@"wifiSent"]intValue]];
+            dataUsageInfo.wifiReceived =  [NSNumber numberWithInt:[[dict valueForKey:@"wifiReceived"]intValue]];
+            dataUsageInfo.wwanSent = [NSNumber numberWithInt:[[dict valueForKey:@"wwanSent"]intValue]];
+            dataUsageInfo.wwanReceived = [NSNumber numberWithInt:[[dict valueForKey:@"wwanReceived"]intValue]];
+            dataUsageInfo.gpsLatitude = [NSNumber numberWithFloat:[[dict valueForKey:@"gpsLatitude"]floatValue]];
+            dataUsageInfo.gpsLongitude = [NSNumber numberWithFloat:[[dict valueForKey:@"gpsLongitude"]floatValue]];
+            dataUsageInfo.estimateSpeed = [NSNumber numberWithFloat:[[dict valueForKey:@"estimateSpeed"]floatValue]];
+            dataUsageInfo.radioAccess = [dict valueForKey:@"radioAccess"];
+            
+            newInsertCount++;
+        }
+        else {
+            NSLog(@"Found one existing record with date: %@, ignored.",[dict valueForKey:@"timeStamp"]);
+        }
+    }
+
+    [self saveContext];
+    
+    return newInsertCount;
+}
+
+#pragma mark Alert View Delegate
+
+- (void)alertView:(UIAlertView *)alertView clickedButtonAtIndex:(NSInteger)buttonIndex
+{
+    NSString *title = [alertView buttonTitleAtIndex:buttonIndex];
+    
+    if ([title isEqualToString:@"Yes"]) {
+        [self getOnlineData];
+    }
+    else if ([title isEqualToString:@"No"]) {
+        UIAlertView * alert = [[UIAlertView alloc]initWithTitle:nil message:@"Successfully fetched data online, view them from local data" delegate:nil cancelButtonTitle:@"Ok" otherButtonTitles:nil];
+        [alert show];
+        [self.navigationController popViewControllerAnimated:YES];
+    }
+}
+
+#pragma mark Core Data Saving support
+
+- (void)saveContext {
+    NSManagedObjectContext *managedObjectContext = self.managedObjectContext;
+    if (managedObjectContext != nil) {
+        NSError *error = nil;
+        if ([managedObjectContext hasChanges] && ![managedObjectContext save:&error]) {
+            // Replace this implementation with code to handle the error appropriately.
+            // abort() causes the application to generate a crash log and terminate. You should not use this function in a shipping application, although it may be useful during development.
+            NSLog(@"Unresolved error %@, %@", error, [error userInfo]);
+            abort();
+        }
+    }
 }
 
 

@@ -3,7 +3,6 @@
     <dependencies>
         <deployment identifier="iOS"/>
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="6247"/>
-        <capability name="Alignment constraints with different attributes" minToolsVersion="5.1"/>
         <capability name="Constraints to layout margins" minToolsVersion="6.0"/>
     </dependencies>
     <scenes>
@@ -103,7 +102,7 @@
                                             <rect key="frame" x="0.0" y="0.0" width="287" height="43"/>
                                             <autoresizingMask key="autoresizingMask"/>
                                             <subviews>
-                                                <label opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" text="My Details" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="NxP-j6-9Jq">
+                                                <label opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" text="Settings" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="NxP-j6-9Jq">
                                                     <rect key="frame" x="15" y="0.0" width="270" height="43"/>
                                                     <autoresizingMask key="autoresizingMask"/>
                                                     <fontDescription key="fontDescription" type="boldSystem" pointSize="20"/>
@@ -159,7 +158,7 @@
                                 <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="wm1-Iu-ayf" id="oSv-Q8-8aZ">
                                     <autoresizingMask key="autoresizingMask"/>
                                     <subviews>
-                                        <label opaque="NO" multipleTouchEnabled="YES" contentMode="left" text="Use Data online (coming soon)" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="Okl-Vg-xGh">
+                                        <label opaque="NO" multipleTouchEnabled="YES" contentMode="left" text="Fetch deleted data online" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="Okl-Vg-xGh">
                                             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                             <fontDescription key="fontDescription" type="system" pointSize="16"/>
                                             <nil key="highlightedColor"/>
@@ -176,6 +175,7 @@
                     <navigationItem key="navigationItem" id="0ie-B9-SfK"/>
                     <connections>
                         <segue destination="lVE-RH-rLK" kind="show" identifier="showGpsOnMapByLocalData" id="zCH-jB-8TD"/>
+                        <segue destination="lVE-RH-rLK" kind="show" identifier="showUseDataOnline" id="7Ib-qt-V5O"/>
                     </connections>
                 </tableViewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="6EJ-fL-f3W" userLabel="First Responder" sceneMemberID="firstResponder"/>
@@ -594,6 +594,16 @@
                                     <outlet property="delegate" destination="U44-Xn-JsO" id="go3-5d-gvb"/>
                                 </connections>
                             </textField>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Jgo-xD-fKq">
+                                <rect key="frame" x="233" y="550" width="135" height="30"/>
+                                <state key="normal" title="Delete all local data">
+                                    <color key="titleColor" red="1" green="0.050213125069722309" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
+                                    <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
+                                </state>
+                                <connections>
+                                    <action selector="deleteAllLocalDataPressed:" destination="U44-Xn-JsO" eventType="touchUpInside" id="7pR-Ns-O1U"/>
+                                </connections>
+                            </button>
                         </subviews>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                         <constraints>
@@ -603,7 +613,9 @@
                             <constraint firstItem="a6r-Vg-Dmu" firstAttribute="leading" secondItem="2hB-yU-cwI" secondAttribute="trailing" constant="70" id="7kG-TK-phr"/>
                             <constraint firstItem="3O9-sb-oBV" firstAttribute="leading" secondItem="M4P-Ea-9dH" secondAttribute="trailing" constant="9" id="92m-bM-8FO"/>
                             <constraint firstItem="M4P-Ea-9dH" firstAttribute="leading" secondItem="PLJ-Xk-J3r" secondAttribute="leadingMargin" id="AJU-Lg-PmX"/>
+                            <constraint firstItem="Xej-n4-8MJ" firstAttribute="top" secondItem="Jgo-xD-fKq" secondAttribute="bottom" constant="20" id="FX5-zr-B6W"/>
                             <constraint firstItem="LB9-r7-FbC" firstAttribute="top" secondItem="PLY-jl-T88" secondAttribute="bottom" constant="7" id="Fca-Ad-TLD"/>
+                            <constraint firstAttribute="centerX" secondItem="Jgo-xD-fKq" secondAttribute="centerX" id="HfL-f9-SvK"/>
                             <constraint firstItem="M4P-Ea-9dH" firstAttribute="top" secondItem="2hB-yU-cwI" secondAttribute="bottom" constant="17" id="Jll-SJ-ggd"/>
                             <constraint firstItem="3O9-sb-oBV" firstAttribute="top" secondItem="a6r-Vg-Dmu" secondAttribute="bottom" constant="8" id="Kcm-uX-foe"/>
                             <constraint firstItem="a6r-Vg-Dmu" firstAttribute="leading" secondItem="2hB-yU-cwI" secondAttribute="trailing" constant="70" id="NJ1-MZ-P94"/>
@@ -677,6 +689,7 @@
         </scene>
     </scenes>
     <inferredMetricsTieBreakers>
-        <segue reference="f4H-KC-iCw"/>
+        <segue reference="bVU-s2-sEB"/>
+        <segue reference="7Ib-qt-V5O"/>
     </inferredMetricsTieBreakers>
 </document>

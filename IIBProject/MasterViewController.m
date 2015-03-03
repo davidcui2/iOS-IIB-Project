@@ -23,10 +23,8 @@
     // Do any additional setup after loading the view, typically from a nib.
 //    self.navigationItem.leftBarButtonItem = self.editButtonItem;
 //
-//    UIBarButtonItem *addButton = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemAdd target:self action:@selector(insertNewObject:)];
-//    self.navigationItem.rightBarButtonItem = addButton;
-    UIBarButtonItem *clearButton = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemTrash target:self action:@selector(askForClearCoreData)];
-    self.navigationItem.rightBarButtonItem = clearButton;
+//    UIBarButtonItem *clearButton = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemTrash target:self action:@selector(askForClearCoreData)];
+//    self.navigationItem.rightBarButtonItem = clearButton;
     
     // Initialize the refresh control.
 //    self.refreshControl = [[UIRefreshControl alloc] init];
@@ -117,6 +115,7 @@
     }
     else if ([[segue identifier] isEqualToString:@"showPersonalDetailFromMaster"]) {
         MapMasterTableViewController *vc = [segue destinationViewController];
+        [vc setManagedObjectContext:_managedObjectContext];
         vc.title = @"My Detail";
     }
     
@@ -194,47 +193,47 @@
     cell.textLabel.text = [[object valueForKey:@"timeStamp"] description];
 }
 
-#pragma mark - Core Data
-
-- (void) askForClearCoreData
-{
-    UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Warning"
-                                                    message:@"You are about to delete all recorded data on this device. This cannot be recovered!"
-                                                   delegate:self
-                                          cancelButtonTitle:@"Cancel"
-                                          otherButtonTitles:@"Delete!",nil];
-    [alert show];
-}
-
-- (void)alertView:(UIAlertView *)alertView clickedButtonAtIndex:(NSInteger)buttonIndex
-{
-    NSString *title = [alertView buttonTitleAtIndex:buttonIndex];
-    
-    if ([title isEqualToString:@"Continue"]) {
-        [self clearCoreData];
-    }
-    
-}
-
-- (void) clearCoreData
-{
-    NSManagedObjectContext *context = [self managedObjectContext];
-    
-    NSFetchRequest *allData = [[NSFetchRequest alloc] init];
-    [allData setEntity:[NSEntityDescription entityForName:@"DataStorage" inManagedObjectContext:context]];
-    [allData setIncludesPropertyValues:NO]; //only fetch the managedObjectID
-    
-    NSError * error = nil;
-    NSArray * data = [context executeFetchRequest:allData error:&error];
-    //error handling goes here
-    for (NSManagedObject * dt in data) {
-        [context deleteObject:dt];
-    }
-    NSError *saveError = nil;
-    [context save:&saveError];
-    //more error handling here
-    NSLog(@"Cleared all data at %@", [NSDate date]);
-}
+//#pragma mark - Core Data
+//
+//- (void) askForClearCoreData
+//{
+//    UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Warning"
+//                                                    message:@"You are about to delete all recorded data on this device. This cannot be recovered!"
+//                                                   delegate:self
+//                                          cancelButtonTitle:@"Cancel"
+//                                          otherButtonTitles:@"Delete!",nil];
+//    [alert show];
+//}
+//
+//- (void)alertView:(UIAlertView *)alertView clickedButtonAtIndex:(NSInteger)buttonIndex
+//{
+//    NSString *title = [alertView buttonTitleAtIndex:buttonIndex];
+//    
+//    if ([title isEqualToString:@"Continue"]) {
+//        [self clearCoreData];
+//    }
+//    
+//}
+//
+//- (void) clearCoreData
+//{
+//    NSManagedObjectContext *context = [self managedObjectContext];
+//    
+//    NSFetchRequest *allData = [[NSFetchRequest alloc] init];
+//    [allData setEntity:[NSEntityDescription entityForName:@"DataStorage" inManagedObjectContext:context]];
+//    [allData setIncludesPropertyValues:NO]; //only fetch the managedObjectID
+//    
+//    NSError * error = nil;
+//    NSArray * data = [context executeFetchRequest:allData error:&error];
+//    //error handling goes here
+//    for (NSManagedObject * dt in data) {
+//        [context deleteObject:dt];
+//    }
+//    NSError *saveError = nil;
+//    [context save:&saveError];
+//    //more error handling here
+//    NSLog(@"Cleared all data at %@", [NSDate date]);
+//}
 
 
 

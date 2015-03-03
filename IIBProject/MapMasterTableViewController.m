@@ -60,11 +60,11 @@
         cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault  reuseIdentifier:MyIdentifier];
     }
     
-    if (indexPath.row == 1) {
-        cell.userInteractionEnabled = NO;
-        cell.textLabel.enabled = NO;
-        cell.detailTextLabel.enabled = NO;
-    }
+//    if (indexPath.row == 1) {
+//        cell.userInteractionEnabled = NO;
+//        cell.textLabel.enabled = NO;
+//        cell.detailTextLabel.enabled = NO;
+//    }
     
     
     return cell;
@@ -75,6 +75,11 @@
         [self.tableView deselectRowAtIndexPath:indexPath animated:YES];
         
         [self performSegueWithIdentifier:@"showGpsOnMapByLocalData" sender:nil];
+    }
+    else {
+        [self.tableView deselectRowAtIndexPath:indexPath animated:YES];
+        
+        [self performSegueWithIdentifier:@"showUseDataOnline" sender:nil];
     }
 }
 
@@ -123,6 +128,12 @@
     if ([[segue identifier] isEqualToString:@"showGpsOnMapByLocalData"]) {
         DatePickerForMapTableViewController *vc = [segue destinationViewController];
         vc.title = @"Choose date to display";
+        [vc setUseLocalData:YES];
+        [vc setManagedObjectContext:_managedObjectContext];
+    }else if ([[segue identifier] isEqualToString:@"showUseDataOnline"]) {
+        DatePickerForMapTableViewController *vc = [segue destinationViewController];
+        vc.title = @"Choose date range to fetch";
+        [vc setUseLocalData:NO];
         [vc setManagedObjectContext:_managedObjectContext];
     }
 }

@@ -8,8 +8,10 @@
 
 #import <UIKit/UIKit.h>
 
-@interface DatePickerForMapTableViewController : UITableViewController <UITableViewDelegate>
+@interface DatePickerForMapTableViewController : UITableViewController <UITableViewDelegate,UIAlertViewDelegate>
 
 @property (nonatomic,strong) NSManagedObjectContext* managedObjectContext;
+
+@property BOOL useLocalData;
 
 @end

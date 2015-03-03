@@ -74,14 +74,62 @@
     return YES;
 }
 
-/*
-#pragma mark - Navigation
+#pragma Clear Data
 
-// In a storyboard-based application, you will often want to do a little preparation before navigation
-- (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender {
-    // Get the new view controller using [segue destinationViewController].
-    // Pass the selected object to the new view controller.
+- (void) askForClearCoreData
+{
+    UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Warning"
+                                                    message:@"You are about to delete all recorded data on this device. This cannot be recovered!"
+                                                   delegate:self
+                                          cancelButtonTitle:@"Cancel"
+                                          otherButtonTitles:@"Delete!",nil];
+    [alert show];
 }
-*/
 
+- (void)alertView:(UIAlertView *)alertView clickedButtonAtIndex:(NSInteger)buttonIndex
+{
+    NSString *title = [alertView buttonTitleAtIndex:buttonIndex];
+    
+    if ([title isEqualToString:@"Delete!"]) {
+        [self clearCoreData];
+    }
+    
+}
+
+- (void) clearCoreData
+{
+    NSManagedObjectContext *context = [self managedObjectContext];
+    
+    NSFetchRequest *allData = [[NSFetchRequest alloc] init];
+    [allData setEntity:[NSEntityDescription entityForName:@"DataStorage" inManagedObjectContext:context]];
+    [allData setIncludesPropertyValues:NO]; //only fetch the managedObjectID
+    
+    NSError * error = nil;
+    NSArray * data = [context executeFetchRequest:allData error:&error];
+    //error handling goes here
+    for (NSManagedObject * dt in data) {
+        [context deleteObject:dt];
+    }
+    NSError *saveError = nil;
+    [context save:&saveError];
+    //more error handling here
+    NSLog(@"Cleared all data at %@", [NSDate date]);
+}
+
+
+- (IBAction)deleteAllLocalDataPressed:(id)sender {
+    [self askForClearCoreData];
+}
+
+
+
+/*
+ #pragma mark - Navigation
+ 
+ // In a storyboard-based application, you will often want to do a little preparation before navigation
+ - (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender {
+ // Get the new view controller using [segue destinationViewController].
+ // Pass the selected object to the new view controller.
+ }
+ */
 @end
