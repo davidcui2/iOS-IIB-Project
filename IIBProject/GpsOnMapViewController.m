@@ -108,7 +108,7 @@ bool noDataFound = 0;
                 
                 amountDataUsed = amountDataNow < amountDataUsed ? amountDataNow : amountDataNow - amountDataUsed;
                 
-                amountData = [NSString stringWithFormat:@"%i Mb", (int)amountDataUsed/1000];
+                amountData = [NSString stringWithFormat:@"%i Kb", (int)amountDataUsed/1000];
                 
                 mapAnnotation.subTitle = [NSString stringWithFormat:@"Used %@ in the past %@ during %@.",amountData, distanceTravelled, timeTravelled];
             }
