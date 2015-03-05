@@ -492,7 +492,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				CODE_SIGN_IDENTITY = "iPhone Developer";
+				CODE_SIGN_IDENTITY = "iPhone Distribution: Zhihao Cui";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				INFOPLIST_FILE = IIBProject/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 7.0;
@@ -507,13 +507,13 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				CODE_SIGN_IDENTITY = "iPhone Developer: Zhihao Cui (39J6MZTST7)";
+				CODE_SIGN_IDENTITY = "iPhone Distribution: Zhihao Cui";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer: Zhihao Cui (39J6MZTST7)";
 				INFOPLIST_FILE = IIBProject/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 7.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				PROVISIONING_PROFILE = "284fb257-b04c-429c-92ee-9f688d655cac";
+				PROVISIONING_PROFILE = "b6091ae6-9da0-4e3d-b88b-b346d72c30d6";
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Release;
