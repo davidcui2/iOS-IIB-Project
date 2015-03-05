@@ -74,6 +74,7 @@ CMMotionManager *motionManager;
         [self startDeviceUpdate];
     }
     
+    self.tableView.allowsSelection = NO;
 }
 
 - (void)didReceiveMemoryWarning {
@@ -136,7 +137,7 @@ CMMotionManager *motionManager;
             cell.detailTextLabel.text = [NSString stringWithFormat:@"%@", [self.motionData objectForKey:cell.textLabel.text]];
             break;
     }
-    
+
     return cell;
 }
 
