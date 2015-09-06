@@ -663,7 +663,7 @@ NSUUID * deviceUUID;
             //
             //            }
             
-            NSString* fullAddress = [NSString stringWithFormat:@"http://%@/Direct/uploadActivity.php", self.ipAddress];
+            NSString* fullAddress = [NSString stringWithFormat:@"https://%@/Direct/uploadActivity.php", self.ipAddress];
             
             IIBPostRequest *newRequest = [[IIBPostRequest alloc]initWithURLString:fullAddress];
             [newRequest setPostKey:@"UUID" withValue:deviceUUID.UUIDString];
@@ -805,7 +805,7 @@ NSUUID * deviceUUID;
             });
         }
         else{
-            NSString* fullAddress = [NSString stringWithFormat:@"http://%@/Direct/uploadActivityJson.php", self.ipAddress];
+            NSString* fullAddress = [NSString stringWithFormat:@"https://%@/Direct/uploadActivityJson.php", self.ipAddress];
             
              NSMutableURLRequest *newRequest = [[NSMutableURLRequest alloc]initWithURL:[NSURL URLWithString:fullAddress]cachePolicy:NSURLRequestUseProtocolCachePolicy timeoutInterval:30];
             
