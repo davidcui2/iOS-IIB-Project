@@ -11,7 +11,7 @@
 #import "DataUsageTableViewController.h"
 #import "UploadViewController.h"
 
-// For Usage
+// For Total Usage
 #include <arpa/inet.h>
 #include <net/if.h>
 #include <ifaddrs.h>

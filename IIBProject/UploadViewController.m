@@ -125,7 +125,7 @@ NSUUID * deviceUUID;
 //    NSString* fullAddress = [NSString stringWithFormat:@"http://%@/Direct/uploadDataUsage.php", self.ipAddress];
 //    [self httpPostWithOneEntryEach:fullAddress];
     
-    NSString* fullAddress = [NSString stringWithFormat:@"http://%@/Direct/uploadDataUsageJson3.php", self.ipAddress];
+    NSString* fullAddress = [NSString stringWithFormat:@"https://%@/Direct/uploadDataUsageJson3.php", self.ipAddress];
     [self httpPostWithJson:fullAddress];
     
 }
