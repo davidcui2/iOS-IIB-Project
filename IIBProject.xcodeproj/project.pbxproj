@@ -150,7 +150,7 @@
 				2277A6771A672A9B00396BE8 /* DataUsageTableViewController.m */,
 				22A6AE871A7ED8BC009DF002 /* Upload */,
 				22FF97151A77B0A700ED3CED /* Map */,
-				22FF97171A77B0C000ED3CED /* Core Data */,
+				22FF97171A77B0C000ED3CED /* Core Data Model */,
 				22FF97161A77B0B100ED3CED /* Classes */,
 				2277A65A1A672A5800396BE8 /* Main.storyboard */,
 				2277A65D1A672A5800396BE8 /* Images.xcassets */,
@@ -226,7 +226,7 @@
 			name = Classes;
 			sourceTree = "<group>";
 		};
-		22FF97171A77B0C000ED3CED /* Core Data */ = {
+		22FF97171A77B0C000ED3CED /* Core Data Model */ = {
 			isa = PBXGroup;
 			children = (
 				2245FD881A6D790300D6526C /* MotionActivityRecord.h */,
@@ -234,7 +234,7 @@
 				224EE2B11AA3E65F00CD7071 /* DataStorage.h */,
 				224EE2B21AA3E65F00CD7071 /* DataStorage.m */,
 			);
-			name = "Core Data";
+			name = "Core Data Model";
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -281,7 +281,7 @@
 		2277A63F1A672A5800396BE8 /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
-				LastUpgradeCheck = 0610;
+				LastUpgradeCheck = 0700;
 				ORGANIZATIONNAME = "Zhihao Cui";
 				TargetAttributes = {
 					2277A6461A672A5800396BE8 = {
@@ -429,6 +429,7 @@
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Distribution: Zhihao Cui";
 				COPY_PHASE_STRIP = NO;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu99;
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_OPTIMIZATION_LEVEL = 0;
@@ -495,8 +496,9 @@
 				CODE_SIGN_IDENTITY = "iPhone Distribution: Zhihao Cui";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				INFOPLIST_FILE = IIBProject/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 7.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				PRODUCT_BUNDLE_IDENTIFIER = edu.zc246.iibdatatrack;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE = "";
 				TARGETED_DEVICE_FAMILY = "1,2";
@@ -510,8 +512,9 @@
 				CODE_SIGN_IDENTITY = "iPhone Distribution: Zhihao Cui";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer: Zhihao Cui (39J6MZTST7)";
 				INFOPLIST_FILE = IIBProject/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 7.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				PRODUCT_BUNDLE_IDENTIFIER = edu.zc246.iibdatatrack;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE = "b6091ae6-9da0-4e3d-b88b-b346d72c30d6";
 				TARGETED_DEVICE_FAMILY = "1,2";
@@ -534,6 +537,7 @@
 				);
 				INFOPLIST_FILE = IIBProjectTests/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
+				PRODUCT_BUNDLE_IDENTIFIER = edu.zc246.iibdatatrack;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE = "";
 				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/IIBProject.app/IIBProject";
@@ -552,6 +556,7 @@
 				);
 				INFOPLIST_FILE = IIBProjectTests/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
+				PRODUCT_BUNDLE_IDENTIFIER = edu.zc246.iibdatatrack;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE = "";
 				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/IIBProject.app/IIBProject";
