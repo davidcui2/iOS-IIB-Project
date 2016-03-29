@@ -61,7 +61,7 @@ NSUUID * deviceUUID;
     _deleteLocalSwitch.on = [defaults boolForKey:@"deleteLocalValue"];
     
     //default
-    self.defaultAddress = @"www.zhihaodatatrack.com";
+    self.defaultAddress = @"www.zhihaocui.com";
     self.ipAddress = self.defaultAddress;
     self.textField.text = self.ipAddress;
     
